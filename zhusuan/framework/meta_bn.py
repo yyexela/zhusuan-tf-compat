@@ -6,7 +6,8 @@ from __future__ import print_function
 from __future__ import division
 import copy
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from functools import wraps
 
 from zhusuan.framework.utils import Context

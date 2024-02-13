@@ -8,7 +8,8 @@ import warnings
 import copy
 
 import six
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from tensorflow.python.client.session import \
     register_session_run_conversion_functions
 

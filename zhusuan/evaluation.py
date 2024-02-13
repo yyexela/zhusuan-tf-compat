@@ -7,7 +7,8 @@ from __future__ import print_function
 
 import six
 from six.moves import zip, map, range
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 
 from zhusuan.utils import merge_dicts

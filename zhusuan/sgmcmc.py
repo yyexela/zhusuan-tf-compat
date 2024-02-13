@@ -7,7 +7,8 @@ from __future__ import division
 import six
 from six.moves import zip
 from collections import namedtuple
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from zhusuan.utils import merge_dicts
 

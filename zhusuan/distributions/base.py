@@ -4,7 +4,8 @@
 from __future__ import absolute_import
 from __future__ import division
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from zhusuan.utils import add_name_scope
 

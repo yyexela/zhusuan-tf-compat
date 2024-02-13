@@ -7,7 +7,8 @@ from copy import copy
 
 import six
 from six.moves import zip, map
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from zhusuan.utils import add_name_scope, merge_dicts
 
