@@ -42,7 +42,7 @@ def var_dropout(x, n, net_size, n_particles, is_training):
 def q(n, net_size, n_particles):
     bn = zs.BayesianNet()
     for i, [n_in, n_out] in enumerate(zip(net_size[:-1], net_size[1:])):
-        with tf.variable_scope('layer' + str(i)):
+        with tf.compat.v1.variable_scope('layer' + str(i)):
             logit_alpha = tf.compat.v1.get_variable('logit_alpha', [n_in])
 
         std = tf.sqrt(tf.nn.sigmoid(logit_alpha) + 1e-10)

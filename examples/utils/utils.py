@@ -89,7 +89,7 @@ def conv2d_transpose(
                              out_shape[1], out_shape[2]])
     filter_shape = [kernel_size[0], kernel_size[1], out_shape[2], in_channels]
 
-    with tf.variable_scope(scope, 'Conv2d_transpose', [inputs], reuse=reuse):
+    with tf.compat.v1.variable_scope(scope, 'Conv2d_transpose', [inputs], reuse=reuse):
         w = tf.compat.v1.get_variable('weights', filter_shape,
                             initializer=weights_initializer)
 

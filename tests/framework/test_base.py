@@ -235,13 +235,13 @@ class TestReuseVariables(tf.test.TestCase):
         def build_mbn(var_to_return):
             return TestReuseVariables._generate_bn(var_to_return)
 
-        with tf.variable_scope('you_might_want_do_this'):
+        with tf.compat.v1.variable_scope('you_might_want_do_this'):
             mbn = build_mbn('a_mean')
             _, m1 = mbn.observe()
-            with tf.variable_scope('you_might_want_do_this'):
+            with tf.compat.v1.variable_scope('you_might_want_do_this'):
                 _, m2 = mbn.observe()
             self.assertNotEqual(m1.name, m2.name)
-        with tf.variable_scope('when_you_are_perfectly_conscious'):
+        with tf.compat.v1.variable_scope('when_you_are_perfectly_conscious'):
             _, m2 = build_mbn('a_mean').observe()
         self.assertNotEqual(m1.name, m2.name)
 

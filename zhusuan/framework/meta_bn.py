@@ -100,7 +100,7 @@ class MetaBayesianNet(object):
         :return: A :class:`~zhusuan.framework.bn.BayesianNet` instance.
         """
         if (self._scope is not None) and (not self._reuse_variables):
-            with tf.variable_scope(self._scope):
+            with tf.compat.v1.variable_scope(self._scope):
                 return self._run_with_observations(self._f, kwargs)
         else:
             return self._run_with_observations(self._f, kwargs)
