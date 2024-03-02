@@ -304,7 +304,7 @@ In ZhuSuan, the code for constructing such a model is::
         # doc_word: Document-word matrix
         doc_word = tf.matmul(tf.reshape(theta, [-1, n_topics]), phi)
         doc_word = tf.reshape(doc_word, [n_chains, n_docs, n_vocab])
-        bn.unnormalized_multinomial('x', tf.log(doc_word), normalize_logits=False,
+        bn.unnormalized_multinomial('x', tf.math.log(doc_word), normalize_logits=False,
                                     dtype=tf.float32)
         return bn
 
@@ -483,7 +483,7 @@ Then write the log joint probability :math:`\log p(\mathbf{X},\mathbf{H}|
 
 Given the following defined tensor, ::
 
-    x = tf.placeholder(tf.float32, shape=[batch_size, n_vocab], name='x')
+    x = tf.compat.v1.placeholder(tf.float32, shape=[batch_size, n_vocab], name='x')
     eta = tf.Variable(tf.zeros([n_chains, batch_size, n_topics]), name='eta')
     beta = tf.Variable(tf.zeros([n_topics, n_vocab]), name='beta')
 
@@ -529,7 +529,7 @@ The gradient ascent operator of :math:`\mathbf{B}` can be defined as follows::
     log_p_beta = tf.reduce_sum(log_p_beta)
     log_px = tf.reduce_sum(tf.reduce_mean(log_px, axis=0))
     log_joint_beta = log_p_beta + log_px
-    learning_rate_ph = tf.placeholder(tf.float32, shape=[], name='lr')
+    learning_rate_ph = tf.compat.v1.placeholder(tf.float32, shape=[], name='lr')
     optimizer = tf.train.AdamOptimizer(learning_rate_ph)
     infer = optimizer.minimize(-log_joint_beta, var_list=[beta])
 
@@ -559,10 +559,10 @@ First, the definition is as follows::
     Eta_mean = np.zeros(n_topics, dtype=np.float32)
     Eta_logstd = np.zeros(n_topics, dtype=np.float32)
 
-    eta_mean = tf.placeholder(tf.float32, shape=[n_topics], name='eta_mean')
-    eta_logstd = tf.placeholder(tf.float32, shape=[n_topics],
+    eta_mean = tf.compat.v1.placeholder(tf.float32, shape=[n_topics], name='eta_mean')
+    eta_logstd = tf.compat.v1.placeholder(tf.float32, shape=[n_topics],
                                 name='eta_logstd')
-    eta_ph = tf.placeholder(tf.float32, shape=[n_chains, batch_size, n_topics],
+    eta_ph = tf.compat.v1.placeholder(tf.float32, shape=[n_chains, batch_size, n_topics],
                             name='eta_ph')
     init_eta_ph = tf.assign(eta, eta_ph)
 

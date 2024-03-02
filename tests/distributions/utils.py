@@ -13,8 +13,8 @@ from zhusuan.distributions.multivariate import Dirichlet
 def test_dtype_2parameter(test_class, Distribution):
     # Test sample dtype
     def _test_sample_dtype(dtype):
-        param1 = tf.placeholder(dtype, None)
-        param2 = tf.placeholder(dtype, None)
+        param1 = tf.compat.v1.placeholder(dtype, None)
+        param2 = tf.compat.v1.placeholder(dtype, None)
         distribution = Distribution(param1, param2)
         test_class.assertEqual(dtype, distribution.sample(1).dtype)
 
@@ -24,12 +24,12 @@ def test_dtype_2parameter(test_class, Distribution):
 
     # Test log_prob and prob dtype
     def _test_log_prob_dtype(dtype):
-        param1 = tf.placeholder(dtype, None)
-        param2 = tf.placeholder(dtype, None)
+        param1 = tf.compat.v1.placeholder(dtype, None)
+        param2 = tf.compat.v1.placeholder(dtype, None)
         distribution = Distribution(param1, param2)
 
         # test for tensor
-        given = tf.placeholder(dtype, None)
+        given = tf.compat.v1.placeholder(dtype, None)
         test_class.assertEqual(distribution.prob(given).dtype, dtype)
         test_class.assertEqual(distribution.log_prob(given).dtype, dtype)
 
@@ -44,8 +44,8 @@ def test_dtype_2parameter(test_class, Distribution):
 
     # Test dtype for parameters
     def _test_parameter_dtype(result_dtype, param1_dtype, param2_dtype):
-        param1 = tf.placeholder(param1_dtype, None)
-        param2 = tf.placeholder(param2_dtype, None)
+        param1 = tf.compat.v1.placeholder(param1_dtype, None)
+        param2 = tf.compat.v1.placeholder(param2_dtype, None)
         distribution = Distribution(param1, param2)
         test_class.assertEqual(distribution.dtype, result_dtype)
 
@@ -98,7 +98,7 @@ def test_dtype_1parameter_discrete(
             _test_sample_dtype_raise(input_, dtype=tf.bool)
 
     def _test_parameter_dtype_raise(param_dtype):
-        param = tf.placeholder(param_dtype, [1])
+        param = tf.compat.v1.placeholder(param_dtype, [1])
         with test_class.assertRaisesRegexp(TypeError,
                                            "must have a dtype in"):
             Distribution(param)
@@ -114,12 +114,12 @@ def test_dtype_1parameter_discrete(
 
     # test dtype for log_prob and prob
     def _test_log_prob_dtype(param_dtype, given_dtype):
-        param = tf.placeholder(param_dtype, [1])
+        param = tf.compat.v1.placeholder(param_dtype, [1])
         distribution = Distribution(param, dtype=given_dtype)
         test_class.assertEqual(distribution.param_dtype, param_dtype)
 
         # test for tensor
-        given = tf.placeholder(given_dtype, None)
+        given = tf.compat.v1.placeholder(given_dtype, None)
         prob = distribution.prob(given)
         log_prob = distribution.log_prob(given)
 
@@ -145,7 +145,7 @@ def test_dtype_1parameter_discrete(
 
 def test_dtype_1parameter_continuous(test_class, Distribution):
     def _test_sample_dtype(dtype):
-        param = tf.placeholder(dtype, [2])
+        param = tf.compat.v1.placeholder(dtype, [2])
         distribution = Distribution(param)
         samples = distribution.sample(2)
         test_class.assertEqual(distribution.dtype, dtype)
@@ -156,7 +156,7 @@ def test_dtype_1parameter_continuous(test_class, Distribution):
     _test_sample_dtype(tf.float64)
 
     def _test_parameter_dtype_raise(param_dtype):
-        param = tf.placeholder(param_dtype, [2])
+        param = tf.compat.v1.placeholder(param_dtype, [2])
         with test_class.assertRaises(TypeError):
             Distribution(param)
 
@@ -165,11 +165,11 @@ def test_dtype_1parameter_continuous(test_class, Distribution):
 
     # test dtype for log_prob and prob
     def _test_log_prob_dtype(dtype):
-        param = tf.placeholder(dtype, [2])
+        param = tf.compat.v1.placeholder(dtype, [2])
         distribution = Distribution(param)
 
         # test for tensor
-        given = tf.placeholder(dtype, None)
+        given = tf.compat.v1.placeholder(dtype, None)
         test_class.assertEqual(distribution.prob(given).dtype, dtype)
         test_class.assertEqual(distribution.log_prob(given).dtype, dtype)
 
@@ -187,8 +187,8 @@ def test_batch_shape_2parameter_univariate(
         test_class, Distribution, make_param1, make_param2):
     # static
     def _test_static(param1_shape, param2_shape, target_shape):
-        param1 = tf.placeholder(tf.float32, param1_shape)
-        param2 = tf.placeholder(tf.float32, param2_shape)
+        param1 = tf.compat.v1.placeholder(tf.float32, param1_shape)
+        param2 = tf.compat.v1.placeholder(tf.float32, param2_shape)
         dist = Distribution(param1, param2)
         if dist.get_batch_shape():
             test_class.assertEqual(dist.get_batch_shape().as_list(),
@@ -210,8 +210,8 @@ def test_batch_shape_2parameter_univariate(
     # dynamic
     with test_class.session(use_gpu=True):
         def _test_dynamic(param1_shape, param2_shape, target_shape):
-            param1 = tf.placeholder(tf.float32, None)
-            param2 = tf.placeholder(tf.float32, None)
+            param1 = tf.compat.v1.placeholder(tf.float32, None)
+            param2 = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param1, param2)
             test_class.assertTrue(dist.batch_shape.dtype is tf.int32)
             test_class.assertEqual(
@@ -232,8 +232,8 @@ def test_batch_shape_2parameter_univariate(
 def test_2parameter_sample_shape_same(
         test_class, Distribution, make_param1, make_param2):
     def _test_static(param1_shape, param2_shape, n_samples, target_shape):
-        param1 = tf.placeholder(tf.float32, param1_shape)
-        param2 = tf.placeholder(tf.float32, param2_shape)
+        param1 = tf.compat.v1.placeholder(tf.float32, param1_shape)
+        param2 = tf.compat.v1.placeholder(tf.float32, param2_shape)
         dist = Distribution(param1, param2)
         samples = dist.sample(n_samples)
         if samples.get_shape():
@@ -245,7 +245,7 @@ def test_2parameter_sample_shape_same(
     _test_static([2, 3], [], 1, [1, 2, 3])
     _test_static([5], [5], 2, [2, 5])
     _test_static([2, 1, 4], [1, 2, 4], 3, [3, 2, 2, 4])
-    _test_static([None, 2], [3, None], tf.placeholder(tf.int32, []),
+    _test_static([None, 2], [3, None], tf.compat.v1.placeholder(tf.int32, []),
                  [None, 3, 2])
     _test_static(None, [1, 2], None, None)
     _test_static(None, [1, 2], 1, None)
@@ -255,8 +255,8 @@ def test_2parameter_sample_shape_same(
     with test_class.session(use_gpu=True):
         def _test_dynamic(param1_shape, param2_shape, n_samples,
                           target_shape):
-            param1 = tf.placeholder(tf.float32, None)
-            param2 = tf.placeholder(tf.float32, None)
+            param1 = tf.compat.v1.placeholder(tf.float32, None)
+            param2 = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param1, param2)
             samples = dist.sample(n_samples)
             test_class.assertEqual(
@@ -276,9 +276,9 @@ def test_2parameter_sample_shape_same(
 def test_2parameter_log_prob_shape_same(
         test_class, Distribution, make_param1, make_param2, make_given):
     def _test_static(param1_shape, param2_shape, given_shape, target_shape):
-        param1 = tf.placeholder(tf.float32, param1_shape)
-        param2 = tf.placeholder(tf.float32, param2_shape)
-        given = tf.placeholder(tf.float32, given_shape)
+        param1 = tf.compat.v1.placeholder(tf.float32, param1_shape)
+        param2 = tf.compat.v1.placeholder(tf.float32, param2_shape)
+        given = tf.compat.v1.placeholder(tf.float32, given_shape)
         dist = Distribution(param1, param2)
         log_p = dist.log_prob(given)
         if log_p.get_shape():
@@ -295,10 +295,10 @@ def test_2parameter_log_prob_shape_same(
     with test_class.session(use_gpu=True):
         def _test_dynamic(param1_shape, param2_shape, given_shape,
                           target_shape):
-            param1 = tf.placeholder(tf.float32, None)
-            param2 = tf.placeholder(tf.float32, None)
+            param1 = tf.compat.v1.placeholder(tf.float32, None)
+            param2 = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param1, param2)
-            given = tf.placeholder(tf.float32, None)
+            given = tf.compat.v1.placeholder(tf.float32, None)
             log_p = dist.log_prob(given)
             test_class.assertEqual(
                 tf.shape(log_p).eval(
@@ -319,7 +319,7 @@ def test_batch_shape_1parameter(
         test_class, Distribution, make_param, is_univariate):
     # static
     def _test_static(param_shape):
-        param = tf.placeholder(tf.float32, param_shape)
+        param = tf.compat.v1.placeholder(tf.float32, param_shape)
         dist = Distribution(param)
         if dist.get_batch_shape():
             if not is_univariate:
@@ -342,7 +342,7 @@ def test_batch_shape_1parameter(
     # dynamic
     with test_class.session(use_gpu=True):
         def _test_dynamic(param_shape):
-            param = tf.placeholder(tf.float32, None)
+            param = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param)
             test_class.assertTrue(dist.batch_shape.dtype is tf.int32)
             test_class.assertEqual(
@@ -360,7 +360,7 @@ def test_batch_shape_1parameter(
 def test_1parameter_sample_shape_same(
         test_class, Distribution, make_param, only_one_sample=False):
     def _test_static(param_shape, n_samples, target_shape):
-        param = tf.placeholder(tf.float32, param_shape)
+        param = tf.compat.v1.placeholder(tf.float32, param_shape)
         dist = Distribution(param)
         samples = dist.sample(n_samples)
         if samples.get_shape():
@@ -372,7 +372,7 @@ def test_1parameter_sample_shape_same(
     _test_static([2, 3], 1, [1, 2, 3])
     if not only_one_sample:
         _test_static([5], 2, [2, 5])
-        _test_static([None, 2], tf.placeholder(tf.int32, []), [None, None, 2])
+        _test_static([None, 2], tf.compat.v1.placeholder(tf.int32, []), [None, None, 2])
     _test_static(None, 1, None)
     _test_static(None, None, None)
     _test_static([None, 1, 10], None, [None, 1, 10])
@@ -381,7 +381,7 @@ def test_1parameter_sample_shape_same(
 
     with test_class.session(use_gpu=True):
         def _test_dynamic(param_shape, n_samples, target_shape):
-            param = tf.placeholder(tf.float32, None)
+            param = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param)
             samples = dist.sample(n_samples)
             test_class.assertEqual(
@@ -398,9 +398,9 @@ def test_1parameter_sample_shape_same(
 def test_1parameter_log_prob_shape_same(
         test_class, Distribution, make_param, make_given):
     def _test_static(param_shape, given_shape, target_shape):
-        param = tf.placeholder(tf.float32, param_shape)
+        param = tf.compat.v1.placeholder(tf.float32, param_shape)
         dist = Distribution(param)
-        given = tf.placeholder(dist.dtype, given_shape)
+        given = tf.compat.v1.placeholder(dist.dtype, given_shape)
         log_p = dist.log_prob(given)
         if log_p.get_shape():
             test_class.assertEqual(log_p.get_shape().as_list(), target_shape)
@@ -418,9 +418,9 @@ def test_1parameter_log_prob_shape_same(
 
     with test_class.session(use_gpu=True):
         def _test_dynamic(param_shape, given_shape, target_shape):
-            param = tf.placeholder(tf.float32, None)
+            param = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param)
-            given = tf.placeholder(dist.dtype, None)
+            given = tf.compat.v1.placeholder(dist.dtype, None)
             log_p = dist.log_prob(given)
             numpy_given_dtype = dist.dtype.as_numpy_dtype
             test_class.assertEqual(
@@ -441,7 +441,7 @@ def test_1parameter_log_prob_shape_same(
 def test_1parameter_sample_shape_one_rank_less(
         test_class, Distribution, make_param):
     def _test_static(param_shape, n_samples, target_shape):
-        param = tf.placeholder(tf.float32, param_shape)
+        param = tf.compat.v1.placeholder(tf.float32, param_shape)
         dist = Distribution(param)
         samples = dist.sample(n_samples)
         if samples.get_shape():
@@ -455,7 +455,7 @@ def test_1parameter_sample_shape_one_rank_less(
     _test_static([2, 3], 1, [1, 2, 3])
     _test_static([5], 2, [2, 5])
     _test_static([1, 2, 4], 3, [3, 1, 2, 4])
-    _test_static([None, 2], tf.placeholder(tf.int32, []), [None, None, 2])
+    _test_static([None, 2], tf.compat.v1.placeholder(tf.int32, []), [None, None, 2])
     _test_static(None, None, None)
     _test_static(None, 1, None)
     _test_static([None, 1, 10], None, [None, 1, 10])
@@ -463,7 +463,7 @@ def test_1parameter_sample_shape_one_rank_less(
 
     with test_class.session(use_gpu=True):
         def _test_dynamic(param_shape, n_samples, target_shape):
-            param = tf.placeholder(tf.float32, None)
+            param = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param)
             samples = dist.sample(n_samples)
             test_class.assertEqual(
@@ -480,9 +480,9 @@ def test_1parameter_sample_shape_one_rank_less(
 def test_1parameter_log_prob_shape_one_rank_less(
         test_class, Distribution, make_param, make_given):
     def _test_static(param_shape, given_shape, target_shape):
-        param = tf.placeholder(tf.float32, param_shape)
+        param = tf.compat.v1.placeholder(tf.float32, param_shape)
         dist = Distribution(param)
-        given = tf.placeholder(dist.dtype, given_shape)
+        given = tf.compat.v1.placeholder(dist.dtype, given_shape)
         log_p = dist.log_prob(given)
         if log_p.get_shape():
             test_class.assertEqual(log_p.get_shape().as_list(), target_shape)
@@ -507,9 +507,9 @@ def test_1parameter_log_prob_shape_one_rank_less(
 
     with test_class.session(use_gpu=True):
         def _test_dynamic(param_shape, given_shape, target_shape):
-            param = tf.placeholder(tf.float32, None)
+            param = tf.compat.v1.placeholder(tf.float32, None)
             dist = Distribution(param)
-            given = tf.placeholder(dist.dtype, None)
+            given = tf.compat.v1.placeholder(dist.dtype, None)
             log_p = dist.log_prob(given)
 
             test_class.assertEqual(

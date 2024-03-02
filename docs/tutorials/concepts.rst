@@ -131,7 +131,7 @@ We apply a Bayesian treatment and assume a Normal prior distribution of the
 regression weights :math:`w`. Suppose the input feature has 5 dimensions. For
 simplicity we define the input as a placeholder and fix the hyper-parameters::
 
-    x = tf.placeholder(tf.float32, shape=[5])
+    x = tf.compat.v1.placeholder(tf.float32, shape=[5])
     alpha = 1.
     beta = 0.1
 

@@ -99,7 +99,7 @@ class Normal(Distribution):
                                              (self._std, 'Normal.std')])
             logstd = tf.math.log(self._std)
             if check_numerics:
-                logstd = tf.check_numerics(logstd, "log(std)")
+                logstd = tf.debugging.check_numerics(logstd, "log(std)")
             self._logstd = logstd
         else:
             # std is None
@@ -108,7 +108,7 @@ class Normal(Distribution):
                                              (self._logstd, 'Normal.logstd')])
             std = tf.exp(self._logstd)
             if check_numerics:
-                std = tf.check_numerics(std, "exp(logstd)")
+                std = tf.debugging.check_numerics(std, "exp(logstd)")
             self._std = std
 
         try:
@@ -177,7 +177,7 @@ class Normal(Distribution):
         c = -0.5 * np.log(2 * np.pi)
         precision = tf.exp(-2 * logstd)
         if self._check_numerics:
-            precision = tf.check_numerics(precision, "precision")
+            precision = tf.debugging.check_numerics(precision, "precision")
         return c - logstd - 0.5 * precision * tf.square(given - mean)
 
     def _prob(self, given):
@@ -241,9 +241,9 @@ class FoldNormal(Distribution):
             self._std = tf.convert_to_tensor(std)
             dtype = assert_same_float_dtype([(self._mean, 'FoldNormal.mean'),
                                              (self._std, 'FoldNormal.std')])
-            logstd = tf.log(self._std)
+            logstd = tf.math.log(self._std)
             if check_numerics:
-                logstd = tf.check_numerics(logstd, "log(std)")
+                logstd = tf.debugging.check_numerics(logstd, "log(std)")
             self._logstd = logstd
         else:
             # std is None
@@ -253,7 +253,7 @@ class FoldNormal(Distribution):
                  (self._logstd, 'FoldNormal.logstd')])
             std = tf.exp(self._logstd)
             if check_numerics:
-                std = tf.check_numerics(std, "exp(logstd)")
+                std = tf.debugging.check_numerics(std, "exp(logstd)")
             self._std = std
 
         try:
@@ -322,8 +322,8 @@ class FoldNormal(Distribution):
         c = -0.5 * (np.log(2.0) + np.log(np.pi))
         precision = tf.exp(-2.0 * logstd)
         if self._check_numerics:
-            precision = tf.check_numerics(precision, "precision")
-        mask = tf.log(tf.cast(given >= 0., dtype=precision.dtype))
+            precision = tf.debugging.check_numerics(precision, "precision")
+        mask = tf.math.log(tf.cast(given >= 0., dtype=precision.dtype))
         return (c - (logstd + 0.5 * precision * tf.square(given - mean)) +
                 tf.nn.softplus(-2.0 * mean * given * precision)) + mask
 
@@ -644,18 +644,18 @@ class Uniform(Distribution):
         return samples
 
     def _log_prob(self, given):
-        log_p = tf.log(self._prob(given))
+        log_p = tf.math.log(self._prob(given))
         if self._check_numerics:
-            log_p = tf.check_numerics(log_p, "log_p")
+            log_p = tf.debugging.check_numerics(log_p, "log_p")
         return log_p
 
     def _prob(self, given):
-        mask = tf.cast(tf.logical_and(tf.less_equal(self.minval, given),
+        mask = tf.cast(tf.math.logical_and(tf.less_equal(self.minval, given),
                                       tf.less(given, self.maxval)),
                        self.dtype)
         p = 1. / (self.maxval - self.minval)
         if self._check_numerics:
-            p = tf.check_numerics(p, "p")
+            p = tf.debugging.check_numerics(p, "p")
         return p * mask
 
 
@@ -736,13 +736,13 @@ class Gamma(Distribution):
 
     def _log_prob(self, given):
         alpha, beta = self.alpha, self.beta
-        log_given = tf.log(given)
-        log_beta = tf.log(beta)
+        log_given = tf.math.log(given)
+        log_beta = tf.math.log(beta)
         lgamma_alpha = tf.lgamma(alpha)
         if self._check_numerics:
-            log_given = tf.check_numerics(log_given, "log(given)")
-            log_beta = tf.check_numerics(log_beta, "log(beta)")
-            lgamma_alpha = tf.check_numerics(lgamma_alpha, "lgamma(alpha)")
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
+            log_beta = tf.debugging.check_numerics(log_beta, "log(beta)")
+            lgamma_alpha = tf.debugging.check_numerics(lgamma_alpha, "lgamma(alpha)")
         return alpha * log_beta - lgamma_alpha + (alpha - 1) * log_given - \
             beta * given
 
@@ -833,18 +833,18 @@ class Beta(Distribution):
     def _log_prob(self, given):
         # TODO: not right when given=0 or 1
         alpha, beta = self.alpha, self.beta
-        log_given = tf.log(given)
-        log_1_minus_given = tf.log(1 - given)
+        log_given = tf.math.log(given)
+        log_1_minus_given = tf.math.log(1 - given)
         lgamma_alpha, lgamma_beta = tf.lgamma(alpha), tf.lgamma(beta)
         lgamma_alpha_plus_beta = tf.lgamma(alpha + beta)
 
         if self._check_numerics:
-            log_given = tf.check_numerics(log_given, "log(given)")
-            log_1_minus_given = tf.check_numerics(
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
+            log_1_minus_given = tf.debugging.check_numerics(
                 log_1_minus_given, "log(1 - given)")
-            lgamma_alpha = tf.check_numerics(lgamma_alpha, "lgamma(alpha)")
-            lgamma_beta = tf.check_numerics(lgamma_beta, "lgamma(beta)")
-            lgamma_alpha_plus_beta = tf.check_numerics(
+            lgamma_alpha = tf.debugging.check_numerics(lgamma_alpha, "lgamma(alpha)")
+            lgamma_beta = tf.debugging.check_numerics(lgamma_beta, "lgamma(beta)")
+            lgamma_alpha_plus_beta = tf.debugging.check_numerics(
                 lgamma_alpha_plus_beta, "lgamma(alpha + beta)")
 
         return (alpha - 1) * log_given + (beta - 1) * log_1_minus_given - (
@@ -923,12 +923,12 @@ class Poisson(Distribution):
         rate = self.rate
         given = tf.cast(given, self.param_dtype)
 
-        log_rate = tf.log(rate)
+        log_rate = tf.math.log(rate)
         lgamma_given_plus_1 = tf.lgamma(given + 1)
 
         if self._check_numerics:
-            log_rate = tf.check_numerics(log_rate, "log(rate)")
-            lgamma_given_plus_1 = tf.check_numerics(
+            log_rate = tf.debugging.check_numerics(log_rate, "log(rate)")
+            lgamma_given_plus_1 = tf.debugging.check_numerics(
                 lgamma_given_plus_1, "lgamma(given + 1)")
         return given * log_rate - rate - lgamma_given_plus_1
 
@@ -1055,9 +1055,9 @@ class Binomial(Distribution):
         lgamma_n_minus_given_plus_1 = tf.lgamma(n - given + 1)
 
         if self._check_numerics:
-            lgamma_given_plus_1 = tf.check_numerics(
+            lgamma_given_plus_1 = tf.debugging.check_numerics(
                 lgamma_given_plus_1, "lgamma(given + 1)")
-            lgamma_n_minus_given_plus_1 = tf.check_numerics(
+            lgamma_n_minus_given_plus_1 = tf.debugging.check_numerics(
                 lgamma_n_minus_given_plus_1, "lgamma(n - given + 1)")
 
         return lgamma_n_plus_1 - lgamma_n_minus_given_plus_1 - \
@@ -1145,14 +1145,14 @@ class InverseGamma(Distribution):
 
     def _log_prob(self, given):
         alpha, beta = self.alpha, self.beta
-        log_given = tf.log(given)
-        log_beta = tf.log(beta)
+        log_given = tf.math.log(given)
+        log_beta = tf.math.log(beta)
         lgamma_alpha = tf.lgamma(alpha)
 
         if self._check_numerics:
-            log_given = tf.check_numerics(log_given, "log(given)")
-            log_beta = tf.check_numerics(log_beta, "log(beta)")
-            lgamma_alpha = tf.check_numerics(lgamma_alpha, "lgamma(alpha)")
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
+            log_beta = tf.debugging.check_numerics(log_beta, "log(beta)")
+            lgamma_alpha = tf.debugging.check_numerics(lgamma_alpha, "lgamma(alpha)")
 
         return alpha * log_beta - lgamma_alpha - (alpha + 1) * log_given - \
             beta / given
@@ -1257,7 +1257,7 @@ class Laplace(Distribution):
             maxval=1.,
             dtype=self.dtype)
         samples = loc - scale * tf.sign(uniform_samples) * \
-            tf.log1p(-tf.abs(uniform_samples))
+            tf.math.log1p(-tf.abs(uniform_samples))
         static_n_samples = n_samples if isinstance(n_samples, int) else None
         samples.set_shape(
             tf.TensorShape([static_n_samples]).concatenate(
@@ -1267,9 +1267,9 @@ class Laplace(Distribution):
     def _log_prob(self, given):
         loc, scale = self.path_param(self.loc),\
                      self.path_param(self.scale)
-        log_scale = tf.log(scale)
+        log_scale = tf.math.log(scale)
         if self._check_numerics:
-            log_scale = tf.check_numerics(log_scale, "log(scale)")
+            log_scale = tf.debugging.check_numerics(log_scale, "log(scale)")
         return -np.log(2.) - log_scale - tf.abs(given - loc) / scale
 
     def _prob(self, given):
@@ -1369,7 +1369,7 @@ class BinConcrete(Distribution):
 
         uniform = open_interval_standard_uniform(shape, self.dtype)
         # TODO: add Logistic distribution
-        logistic = tf.log(uniform) - tf.log(1 - uniform)
+        logistic = tf.math.log(uniform) - tf.math.log(1 - uniform)
         samples = tf.sigmoid((logits + logistic) / temperature)
 
         static_n_samples = n_samples if isinstance(n_samples, int) else None
@@ -1381,15 +1381,15 @@ class BinConcrete(Distribution):
     def _log_prob(self, given):
         temperature, logits = self.path_param(self.temperature), \
                               self.path_param(self.logits)
-        log_given = tf.log(given)
-        log_1_minus_given = tf.log(1 - given)
-        log_temperature = tf.log(temperature)
+        log_given = tf.math.log(given)
+        log_1_minus_given = tf.math.log(1 - given)
+        log_temperature = tf.math.log(temperature)
 
         if self._check_numerics:
-            log_given = tf.check_numerics(log_given, "log(given)")
-            log_1_minus_given = tf.check_numerics(
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
+            log_1_minus_given = tf.debugging.check_numerics(
                 log_1_minus_given, "log(1 - given)")
-            log_temperature = tf.check_numerics(
+            log_temperature = tf.debugging.check_numerics(
                 log_temperature, "log(temperature)")
 
         logistic_given = log_given - log_1_minus_given

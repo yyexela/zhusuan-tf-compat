@@ -159,7 +159,7 @@ class Implicit(Distribution):
         return tf.expand_dims(self.samples, 0)
 
     def _log_prob(self, given):
-        return tf.log(self.prob(given))
+        return tf.math.log(self.prob(given))
 
     def _prob(self, given):
         prob = tf.equal(given, self.samples)

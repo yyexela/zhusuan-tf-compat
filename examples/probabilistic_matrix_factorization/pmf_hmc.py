@@ -82,10 +82,10 @@ def main():
     M *= chunk_size
 
     # Selection
-    neighbor_u = tf.placeholder(tf.int32, shape=[None], name="neighbor_u")
-    neighbor_v = tf.placeholder(tf.int32, shape=[None], name="neighbor_v")
-    select_u = tf.placeholder(tf.int32, shape=[None], name="select_u")
-    select_v = tf.placeholder(tf.int32, shape=[None], name="select_v")
+    neighbor_u = tf.compat.v1.placeholder(tf.int32, shape=[None], name="neighbor_u")
+    neighbor_v = tf.compat.v1.placeholder(tf.int32, shape=[None], name="neighbor_v")
+    select_u = tf.compat.v1.placeholder(tf.int32, shape=[None], name="select_u")
+    select_v = tf.compat.v1.placeholder(tf.int32, shape=[None], name="select_v")
     alpha_u = 1.0
     alpha_v = 1.0
     alpha_pred = 0.2 / 4.0
@@ -94,25 +94,25 @@ def main():
     Us = []
     Vs = []
     for i in range(N // chunk_size):
-        ui = tf.get_variable('u_chunk_%d' % i, shape=[K, chunk_size, D],
+        ui = tf.compat.v1.get_variable('u_chunk_%d' % i, shape=[K, chunk_size, D],
                              initializer=tf.random_normal_initializer(0, 0.1),
                              trainable=False)
         Us.append(ui)
     for i in range(M // chunk_size):
-        vi = tf.get_variable('v_chunk_%d' % i, shape=[K, chunk_size, D],
+        vi = tf.compat.v1.get_variable('v_chunk_%d' % i, shape=[K, chunk_size, D],
                              initializer=tf.random_normal_initializer(0, 0.1),
                              trainable=False)
         Vs.append(vi)
     U = tf.concat(Us, axis=1)
     V = tf.concat(Vs, axis=1)
 
-    n = tf.placeholder(tf.int32, shape=[], name='n')
-    m = tf.placeholder(tf.int32, shape=[], name='m')
+    n = tf.compat.v1.placeholder(tf.int32, shape=[], name='n')
+    m = tf.compat.v1.placeholder(tf.int32, shape=[], name='m')
     model = pmf(n, m, D, K, select_u, select_v, alpha_u, alpha_v,
                      alpha_pred)
 
     # prediction
-    true_rating = tf.placeholder(tf.float32, shape=[None], name='true_rating')
+    true_rating = tf.compat.v1.placeholder(tf.float32, shape=[None], name='true_rating')
     normalized_rating = (true_rating - 1.0) / 4.0
     pred_rating = model.observe(u=U, v=V)["r"]
     pred_rating = tf.reduce_mean(pred_rating, axis=0)
@@ -126,10 +126,10 @@ def main():
     target_u = tf.gather(U, neighbor_u, axis=1)
     target_v = tf.gather(V, neighbor_v, axis=1)
 
-    candidate_sample_u = tf.get_variable(
+    candidate_sample_u = tf.compat.v1.get_variable(
         'cand_sample_chunk_u', shape=[K, chunk_size, D],
         initializer=tf.random_normal_initializer(0, 0.1), trainable=True)
-    candidate_sample_v = tf.get_variable(
+    candidate_sample_v = tf.compat.v1.get_variable(
         'cand_sample_chunk_v', shape=[K, chunk_size, D],
         initializer=tf.random_normal_initializer(0, 0.1), trainable=True)
 
@@ -152,9 +152,9 @@ def main():
         {"r": normalized_rating, "u": target_u},
         {"v": candidate_sample_v})
 
-    candidate_idx_u = tf.placeholder(tf.int32, shape=[chunk_size],
+    candidate_idx_u = tf.compat.v1.placeholder(tf.int32, shape=[chunk_size],
                                      name='cand_u_chunk')
-    candidate_idx_v = tf.placeholder(tf.int32, shape=[chunk_size],
+    candidate_idx_v = tf.compat.v1.placeholder(tf.int32, shape=[chunk_size],
                                      name='cand_v_chunk')
     candidate_u = tf.gather(U, candidate_idx_u, axis=1)  # [K, chunk_size, D]
     candidate_v = tf.gather(V, candidate_idx_v, axis=1)  # [K, chunk_size, D]

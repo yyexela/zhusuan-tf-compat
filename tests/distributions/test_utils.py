@@ -74,12 +74,12 @@ class TestGetShapeList(tf.test.TestCase):
     def test_get_shape_list(self):
         with self.session(use_gpu=True):
             def test_shape_static(shape):
-                ph = tf.placeholder(tf.float32, shape)
+                ph = tf.compat.v1.placeholder(tf.float32, shape)
                 self.assertEqual(get_shape_list(ph), shape)
             test_shape_static([2, 3])
             test_shape_static(None)
             # Dynamic
-            ph = tf.placeholder(tf.float32, [2, None])
+            ph = tf.compat.v1.placeholder(tf.float32, [2, None])
             fd = {ph: np.ones([2, 9])}
             shapes = get_shape_list(ph)
             self.assertEqual(shapes[0], 2)
@@ -89,7 +89,7 @@ class TestGetShapeList(tf.test.TestCase):
 class TestGetShapeAt(tf.test.TestCase):
     def test_get_shape_at(self):
         with self.session(use_gpu=True):
-            ph = tf.placeholder(tf.float32, [2, None])
+            ph = tf.compat.v1.placeholder(tf.float32, [2, None])
             # Static
             self.assertEqual(get_shape_at(ph, 0), 2)
             # Dynamic
@@ -101,12 +101,12 @@ class TestAssertRankAtLeast(tf.test.TestCase):
     def test_assert_rank_at_least(self):
         with self.session(use_gpu=True):
             # Static
-            ph = tf.placeholder(tf.float32, [2, None])
+            ph = tf.compat.v1.placeholder(tf.float32, [2, None])
             assert_rank_at_least(ph, 2, 'ph')
             with self.assertRaisesRegexp(ValueError, 'should have rank'):
                 assert_rank_at_least(ph, 3, 'ph')
             # Dynamic
-            ph = tf.placeholder(tf.float32, None)
+            ph = tf.compat.v1.placeholder(tf.float32, None)
             assert_2 = assert_rank_at_least(ph, 2, 'ph')
             assert_3 = assert_rank_at_least(ph, 3, 'ph')
             fd = {ph: np.ones([2, 9])}

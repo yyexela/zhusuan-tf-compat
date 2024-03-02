@@ -30,7 +30,7 @@ class TestPlanarNormalizingFlow(tf.test.TestCase):
                 z_1i = z_1[0, i]
                 grad.append(tf.gradients(z_1i, z_0)[0])
             jocabian = tf.concat(grad, axis=0)
-            log_det_jacobian = tf.log(tf.matrix_determinant(jocabian))
+            log_det_jacobian = tf.math.log(tf.matrix_determinant(jocabian))
 
             sess.run(tf.global_variables_initializer())
             test_value, true_value = sess.run([-log_det_jacobian,
@@ -67,7 +67,7 @@ class TestLinearIaf(tf.test.TestCase):
                 z_1i = z_1[0, i]
                 grad.append(tf.gradients(z_1i, z_0)[0])
             jocabian = tf.concat(grad, axis=0)
-            log_det_jacobian = tf.log(tf.matrix_determinant(jocabian))
+            log_det_jacobian = tf.math.log(tf.matrix_determinant(jocabian))
 
             sess.run(tf.global_variables_initializer())
             test_value, true_value = sess.run([-log_det_jacobian,

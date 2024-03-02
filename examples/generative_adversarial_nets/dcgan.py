@@ -72,8 +72,8 @@ def main():
     z_dim = 40
 
     # Build the computation graph
-    is_training = tf.placeholder(tf.bool, shape=[], name="is_training")
-    x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3], name="x")
+    is_training = tf.compat.v1.placeholder(tf.bool, shape=[], name="is_training")
+    x = tf.compat.v1.placeholder(tf.float32, shape=[None, 32, 32, 3], name="x")
     optimizer = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.5)
 
     def build_tower_graph(x, id_):
@@ -118,7 +118,7 @@ def main():
     gen_loss, disc_loss = multi_gpu.average_losses(tower_losses)
     grads = multi_gpu.average_gradients(tower_grads)
 
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
         infer_op = optimizer.apply_gradients(grads)
 

@@ -77,8 +77,8 @@ def main():
     z_dim = 40
 
     # Build the computation graph
-    is_training = tf.placeholder(tf.bool, shape=[], name="is_training")
-    x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name="x")
+    is_training = tf.compat.v1.placeholder(tf.bool, shape=[], name="is_training")
+    x = tf.compat.v1.placeholder(tf.float32, shape=[None, 28, 28, 1], name="x")
     optimizer = tf.train.RMSPropOptimizer(learning_rate=0.0002, decay=0.5)
 
     def build_tower_graph(x, id_):
@@ -113,7 +113,7 @@ def main():
     w_distance = -disc_loss
     grads = multi_gpu.average_gradients(tower_grads)
 
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
         infer_op = optimizer.apply_gradients(grads)
 

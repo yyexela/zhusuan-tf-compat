@@ -32,7 +32,7 @@ if __name__ == "__main__":
         a1 = -0.5*((x-mu1)/stdev)**2
         a2 = -0.5*((x-mu2)/stdev)**2
         amax = tf.maximum(a1, a2)
-        return amax + tf.log(tf.exp(a1-amax)+tf.exp(a2-amax))
+        return amax + tf.math.log(tf.exp(a1-amax)+tf.exp(a2-amax))
 
     sgmcmc = zs.SGNHT(learning_rate=0.2, variance_extra=0.1, tune_rate=0.01,
                       second_order=False, use_vector_alpha=False)

@@ -34,7 +34,7 @@ class TestContext(tf.test.TestCase):
 class TestGetBackwardTensors(tf.test.TestCase):
     def testGetBackwardOpsChain(self):
         # a -> b -> c
-        a = tf.placeholder(tf.float32)
+        a = tf.compat.v1.placeholder(tf.float32)
         b = tf.sqrt(a)
         c = tf.square(b)
         for n in range(4):
@@ -58,9 +58,9 @@ class TestGetBackwardTensors(tf.test.TestCase):
     def testGetBackwardOpsSplit(self):
         # a -> b -> c
         #       \-> d
-        a = tf.placeholder(tf.float32)
+        a = tf.compat.v1.placeholder(tf.float32)
         b = tf.exp(a)
-        c = tf.log(b)
+        c = tf.math.log(b)
         d = tf.negative(b)
         self.assertEqual(get_backward_ops([d]), [a.op, b.op, d.op])
         self.assertEqual(get_backward_ops([c]), [a.op, b.op, c.op])
@@ -77,7 +77,7 @@ class TestGetBackwardTensors(tf.test.TestCase):
     def testGetBackwardOpsMerge(self):
         # a -> c -> d
         # b ->/
-        a = tf.placeholder(tf.float32)
+        a = tf.compat.v1.placeholder(tf.float32)
         b = tf.constant(0, dtype=tf.int32)
         c = tf.reduce_sum(a, reduction_indices=b)
         d = tf.stop_gradient(c)
@@ -90,7 +90,7 @@ class TestGetBackwardTensors(tf.test.TestCase):
     def testGetBackwardOpsBridge(self):
         # a -> b -> c -> d -> e
         #       \    ---    /
-        a = tf.placeholder(tf.int32)
+        a = tf.compat.v1.placeholder(tf.int32)
         b = tf.identity(a)
         c = tf.cast(b, tf.float32)
         d = tf.tile(c, b)
@@ -106,14 +106,14 @@ class TestGetBackwardTensors(tf.test.TestCase):
         # c -> d - e
         #       \ /
         #        f
-        a = tf.placeholder(tf.float32, name='a')
+        a = tf.compat.v1.placeholder(tf.float32, name='a')
         b = tf.identity(a, name='b')
-        c = tf.placeholder(tf.float32, name='c')
+        c = tf.compat.v1.placeholder(tf.float32, name='c')
         d = tf.identity(c, name='d')
         with tf.control_dependencies([b, d]):
-            e = tf.placeholder(tf.float32, name='e')
+            e = tf.compat.v1.placeholder(tf.float32, name='e')
         with tf.control_dependencies([e, d]):
-            f = tf.placeholder(tf.float32, name='f')
+            f = tf.compat.v1.placeholder(tf.float32, name='f')
         self.assertEqual(get_backward_ops([f]),
                          [a.op, b.op, c.op, d.op, e.op, f.op])
         self.assertEqual(get_backward_ops([d, f]),

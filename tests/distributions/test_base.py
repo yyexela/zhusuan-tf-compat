@@ -111,7 +111,7 @@ class TestDistributions(tf.test.TestCase):
                 self.assertAllEqual(samples_2.eval(),
                                     np.ones((n, 2, 3, 4, 5), dtype=np.int32))
             # dynamic n_samples
-            n_samples = tf.placeholder(tf.int32)
+            n_samples = tf.compat.v1.placeholder(tf.int32)
             samples_3 = dist.sample(n_samples=n_samples)
             for n in [1, 2]:
                 self.assertAllEqual(samples_3.eval(feed_dict={n_samples: n}),
@@ -133,7 +133,7 @@ class TestDistributions(tf.test.TestCase):
             log_p_2 = dist.log_prob(given_2)
             self.assertAllEqual(log_p_2.eval(), np.zeros((1, 2)))
 
-            given_3 = tf.placeholder(tf.float32, shape=None)
+            given_3 = tf.compat.v1.placeholder(tf.float32, shape=None)
             log_p_3 = dist.log_prob(given_3)
             self.assertAllEqual(
                 log_p_3.eval(feed_dict={given_3: np.ones((2, 3, 4, 5))}),
@@ -160,7 +160,7 @@ class TestDistributions(tf.test.TestCase):
             with self.assertRaisesRegexp(ValueError, "has been deprecated"):
                 Dist(group_event_ndims=1)
 
-            group_ndims = tf.placeholder(tf.int32)
+            group_ndims = tf.compat.v1.placeholder(tf.int32)
             dist2 = Dist(group_ndims=group_ndims)
             with self.assertRaisesRegexp(tf.errors.InvalidArgumentError,
                                          "must be non-negative"):
@@ -186,7 +186,7 @@ class TestDistributions(tf.test.TestCase):
             def _test_log_prob_raise(dtype, given_dtype):
                 dist = Dist(dtype=dtype)
 
-                given = tf.placeholder(given_dtype, None)
+                given = tf.compat.v1.placeholder(given_dtype, None)
                 with self.assertRaises(ValueError):
                     dist.prob(given)
 

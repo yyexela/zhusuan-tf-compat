@@ -37,8 +37,8 @@ if __name__ == "__main__":
 
     # Build the computation graph
     model = gaussian(n_x, stdev, n_chains)
-    adapt_step_size = tf.placeholder(tf.bool, shape=[], name="adapt_step_size")
-    adapt_mass = tf.placeholder(tf.bool, shape=[], name="adapt_mass")
+    adapt_step_size = tf.compat.v1.placeholder(tf.bool, shape=[], name="adapt_step_size")
+    adapt_mass = tf.compat.v1.placeholder(tf.bool, shape=[], name="adapt_mass")
     hmc = zs.HMC(step_size=1e-3, n_leapfrogs=n_leapfrogs,
                  adapt_step_size=adapt_step_size, adapt_mass=adapt_mass,
                  target_acceptance_rate=0.9)

@@ -41,18 +41,18 @@ class TestNormal(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 Normal(mean=tf.ones([2, 1]), std=tf.ones([2, 4, 3]))
 
-        Normal(mean=tf.placeholder(tf.float32, [None, 1]),
-               logstd=tf.placeholder(tf.float32, [None, 1, 3]))
-        Normal(mean=tf.placeholder(tf.float32, [None, 1]),
-               std=tf.placeholder(tf.float32, [None, 1, 3]))
+        Normal(mean=tf.compat.v1.placeholder(tf.float32, [None, 1]),
+               logstd=tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
+        Normal(mean=tf.compat.v1.placeholder(tf.float32, [None, 1]),
+               std=tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        norm = Normal(mean=tf.placeholder(tf.float32, None),
-                      logstd=tf.placeholder(tf.float32, None))
+        norm = Normal(mean=tf.compat.v1.placeholder(tf.float32, None),
+                      logstd=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(norm.get_value_shape().as_list(), [])
-        norm = Normal(mean=tf.placeholder(tf.float32, None),
-                      std=tf.placeholder(tf.float32, None))
+        norm = Normal(mean=tf.compat.v1.placeholder(tf.float32, None),
+                      std=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(norm.get_value_shape().as_list(), [])
 
         # dynamic
@@ -78,13 +78,13 @@ class TestNormal(tf.test.TestCase):
         mean = tf.ones([2, 3])
         logstd = tf.ones([2, 3])
         norm_rep = Normal(mean, logstd=logstd)
-        samples = norm_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = norm_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, logstd_grads = tf.gradients(samples, [mean, logstd])
         self.assertTrue(mean_grads is not None)
         self.assertTrue(logstd_grads is not None)
 
         norm_no_rep = Normal(mean, logstd=logstd, is_reparameterized=False)
-        samples = norm_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = norm_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, logstd_grads = tf.gradients(samples, [mean, logstd])
         self.assertEqual(mean_grads, None)
         self.assertEqual(logstd_grads, None)
@@ -92,7 +92,7 @@ class TestNormal(tf.test.TestCase):
     def test_path_derivative(self):
         mean = tf.ones([2, 3])
         logstd = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         norm_rep = Normal(mean, logstd=logstd, use_path_derivative=True)
         samples = norm_rep.sample(n_samples)
@@ -200,18 +200,18 @@ class TestFoldNormal(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 FoldNormal(mean=tf.ones([2, 1]), std=tf.ones([2, 4, 3]))
 
-        FoldNormal(mean=tf.placeholder(tf.float32, [None, 1]),
-                   logstd=tf.placeholder(tf.float32, [None, 1, 3]))
-        FoldNormal(mean=tf.placeholder(tf.float32, [None, 1]),
-                   std=tf.placeholder(tf.float32, [None, 1, 3]))
+        FoldNormal(mean=tf.compat.v1.placeholder(tf.float32, [None, 1]),
+                   logstd=tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
+        FoldNormal(mean=tf.compat.v1.placeholder(tf.float32, [None, 1]),
+                   std=tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        norm = FoldNormal(mean=tf.placeholder(tf.float32, None),
-                          logstd=tf.placeholder(tf.float32, None))
+        norm = FoldNormal(mean=tf.compat.v1.placeholder(tf.float32, None),
+                          logstd=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(norm.get_value_shape().as_list(), [])
-        norm = FoldNormal(mean=tf.placeholder(tf.float32, None),
-                          std=tf.placeholder(tf.float32, None))
+        norm = FoldNormal(mean=tf.compat.v1.placeholder(tf.float32, None),
+                          std=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(norm.get_value_shape().as_list(), [])
 
         # dynamic
@@ -237,13 +237,13 @@ class TestFoldNormal(tf.test.TestCase):
         mean = tf.ones([2, 3])
         logstd = tf.ones([2, 3])
         norm_rep = FoldNormal(mean, logstd=logstd)
-        samples = norm_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = norm_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, logstd_grads = tf.gradients(samples, [mean, logstd])
         self.assertTrue(mean_grads is not None)
         self.assertTrue(logstd_grads is not None)
 
         norm_no_rep = FoldNormal(mean, logstd=logstd, is_reparameterized=False)
-        samples = norm_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = norm_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, logstd_grads = tf.gradients(samples, [mean, logstd])
         self.assertEqual(mean_grads, None)
         self.assertEqual(logstd_grads, None)
@@ -251,7 +251,7 @@ class TestFoldNormal(tf.test.TestCase):
     def test_path_derivative(self):
         mean = tf.ones([2, 3])
         logstd = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         norm_rep = FoldNormal(mean, logstd=logstd, use_path_derivative=True)
         samples = norm_rep.sample(n_samples)
@@ -339,7 +339,7 @@ class TestFoldNormal(tf.test.TestCase):
 class TestBernoulli(tf.test.TestCase):
     def test_value_shape(self):
         # static
-        bernoulli = Bernoulli(tf.placeholder(tf.float32, None))
+        bernoulli = Bernoulli(tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(bernoulli.get_value_shape().as_list(), [])
 
         # dynamic
@@ -396,11 +396,11 @@ class TestCategorical(tf.test.TestCase):
         cat = Categorical(tf.ones([10]))
         self.assertTrue(isinstance(cat.n_categories, int))
         self.assertEqual(cat.n_categories, 10)
-        cat2 = Categorical(tf.placeholder(tf.float32, [3, None]))
+        cat2 = Categorical(tf.compat.v1.placeholder(tf.float32, [3, None]))
         self.assertTrue(cat2.n_categories is not None)
 
         with self.session(use_gpu=True):
-            logits = tf.placeholder(tf.float32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
             cat3 = Categorical(logits)
             self.assertEqual(
                 cat3.n_categories.eval(feed_dict={logits: np.ones([10])}), 10)
@@ -410,7 +410,7 @@ class TestCategorical(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        cat = Categorical(tf.placeholder(tf.float32, None))
+        cat = Categorical(tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(cat.get_value_shape().as_list(), [])
 
         # dynamic
@@ -423,7 +423,7 @@ class TestCategorical(tf.test.TestCase):
     def test_batch_shape(self):
         # static
         def _test_static(logits_shape):
-            logits = tf.placeholder(tf.float32, logits_shape)
+            logits = tf.compat.v1.placeholder(tf.float32, logits_shape)
             cat = Categorical(logits)
             if cat.get_batch_shape():
                 self.assertEqual(cat.get_batch_shape().as_list(),
@@ -442,7 +442,7 @@ class TestCategorical(tf.test.TestCase):
         # dynamic
         with self.session(use_gpu=True):
             def _test_dynamic(logits_shape):
-                logits = tf.placeholder(tf.float32, None)
+                logits = tf.compat.v1.placeholder(tf.float32, None)
                 cat = Categorical(logits)
                 self.assertTrue(cat.batch_shape.dtype is tf.int32)
                 self.assertEqual(
@@ -456,7 +456,7 @@ class TestCategorical(tf.test.TestCase):
 
     def test_sample_shape(self):
         def _test_static(logits_shape, n_samples, target_shape):
-            logits = tf.placeholder(tf.float32, logits_shape)
+            logits = tf.compat.v1.placeholder(tf.float32, logits_shape)
             cat = Categorical(logits)
             samples = cat.sample(n_samples)
             if samples.get_shape():
@@ -471,7 +471,7 @@ class TestCategorical(tf.test.TestCase):
         _test_static([5], 2, [2])
         _test_static([1, 2, 4], None, [1, 2])
         _test_static([1, 2, 4], 1, [1, 1, 2])
-        _test_static([None, 2], tf.placeholder(tf.int32, []), [None, None])
+        _test_static([None, 2], tf.compat.v1.placeholder(tf.int32, []), [None, None])
         _test_static([None, 1, 10], None, [None, 1])
         _test_static(None, None, None)
         _test_static(None, 1, None)
@@ -479,7 +479,7 @@ class TestCategorical(tf.test.TestCase):
 
         with self.session(use_gpu=True):
             def _test_dynamic(logits_shape, n_samples, target_shape):
-                logits = tf.placeholder(tf.float32, None)
+                logits = tf.compat.v1.placeholder(tf.float32, None)
                 cat = Categorical(logits)
                 samples = cat.sample(n_samples)
                 self.assertEqual(
@@ -494,8 +494,8 @@ class TestCategorical(tf.test.TestCase):
 
     def test_log_prob_shape(self):
         def _test_static(logits_shape, given_shape, target_shape):
-            logits = tf.placeholder(tf.float32, logits_shape)
-            given = tf.placeholder(tf.int32, given_shape)
+            logits = tf.compat.v1.placeholder(tf.float32, logits_shape)
+            given = tf.compat.v1.placeholder(tf.int32, given_shape)
             cat = Categorical(logits)
             log_p = cat.log_prob(given)
             if log_p.get_shape():
@@ -516,9 +516,9 @@ class TestCategorical(tf.test.TestCase):
 
         with self.session(use_gpu=True):
             def _test_dynamic(logits_shape, given_shape, target_shape):
-                logits = tf.placeholder(tf.float32, None)
+                logits = tf.compat.v1.placeholder(tf.float32, None)
                 cat = Categorical(logits)
-                given = tf.placeholder(tf.int32, None)
+                given = tf.compat.v1.placeholder(tf.int32, None)
                 log_p = cat.log_prob(given)
                 self.assertEqual(
                     tf.shape(log_p).eval(
@@ -576,13 +576,13 @@ class TestUniform(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 Uniform(minval=tf.zeros([2, 1]), maxval=tf.ones([2, 4, 3]))
 
-        Uniform(tf.placeholder(tf.float32, [None, 1]),
-                tf.placeholder(tf.float32, [None, 1, 3]))
+        Uniform(tf.compat.v1.placeholder(tf.float32, [None, 1]),
+                tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        unif = Uniform(minval=tf.placeholder(tf.float32, None),
-                       maxval=tf.placeholder(tf.float32, None))
+        unif = Uniform(minval=tf.compat.v1.placeholder(tf.float32, None),
+                       maxval=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(unif.get_value_shape().as_list(), [])
 
         # dynamic
@@ -604,13 +604,13 @@ class TestUniform(tf.test.TestCase):
         minval = tf.ones([2, 3])
         maxval = tf.ones([2, 3])
         unif_rep = Uniform(minval, maxval)
-        samples = unif_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = unif_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         minval_grads, maxval_grads = tf.gradients(samples, [minval, maxval])
         self.assertTrue(minval_grads is not None)
         self.assertTrue(maxval_grads is not None)
 
         unif_no_rep = Uniform(minval, maxval, is_reparameterized=False)
-        samples = unif_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = unif_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         minval_grads, maxval_grads = tf.gradients(samples, [minval, maxval])
         self.assertEqual(minval_grads, None)
         self.assertEqual(maxval_grads, None)
@@ -658,13 +658,13 @@ class TestGamma(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 Gamma(alpha=tf.ones([2, 1]), beta=tf.ones([2, 4, 3]))
 
-        Gamma(tf.placeholder(tf.float32, [None, 1]),
-              tf.placeholder(tf.float32, [None, 1, 3]))
+        Gamma(tf.compat.v1.placeholder(tf.float32, [None, 1]),
+              tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        gamma = Gamma(alpha=tf.placeholder(tf.float32, None),
-                      beta=tf.placeholder(tf.float32, None))
+        gamma = Gamma(alpha=tf.compat.v1.placeholder(tf.float32, None),
+                      beta=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(gamma.get_value_shape().as_list(), [])
 
         # dynamic
@@ -707,9 +707,9 @@ class TestGamma(tf.test.TestCase):
             _test_value([1e-8, 1e8], [[1., 1e8], [1e-8, 5.]], [7.])
 
     def test_check_numerics(self):
-        alpha = tf.placeholder(tf.float32, [])
-        beta = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.float32, [])
+        alpha = tf.compat.v1.placeholder(tf.float32, [])
+        beta = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.float32, [])
         gamma = Gamma(alpha, beta, check_numerics=True)
         log_p = gamma.log_prob(given)
         with self.session(use_gpu=True):
@@ -734,13 +734,13 @@ class TestBeta(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 Beta(alpha=tf.ones([2, 1]), beta=tf.ones([2, 4, 3]))
 
-        Beta(tf.placeholder(tf.float32, [None, 1]),
-             tf.placeholder(tf.float32, [None, 1, 3]))
+        Beta(tf.compat.v1.placeholder(tf.float32, [None, 1]),
+             tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        dist = Beta(alpha=tf.placeholder(tf.float32, None),
-                    beta=tf.placeholder(tf.float32, None))
+        dist = Beta(alpha=tf.compat.v1.placeholder(tf.float32, None),
+                    beta=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(dist.get_value_shape().as_list(), [])
 
         # dynamic
@@ -782,9 +782,9 @@ class TestBeta(tf.test.TestCase):
             _test_value([[1e-8], [1e8]], [[1., 1e8], [1e-8, 1.]], [0.7])
 
     def test_check_numerics(self):
-        alpha = tf.placeholder(tf.float32, [])
-        beta = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.float32, [])
+        alpha = tf.compat.v1.placeholder(tf.float32, [])
+        beta = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.float32, [])
         dist = Beta(alpha, beta, check_numerics=True)
         log_p = dist.log_prob(given)
         with self.session(use_gpu=True):
@@ -808,7 +808,7 @@ class TestBeta(tf.test.TestCase):
 class TestPoisson(tf.test.TestCase):
     def test_value_shape(self):
         # static
-        poisson = Poisson(tf.placeholder(tf.float32, None))
+        poisson = Poisson(tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(poisson.get_value_shape().as_list(), [])
 
         # dynamic
@@ -851,8 +851,8 @@ class TestPoisson(tf.test.TestCase):
                         100 * np.ones([3, 1, 2, 3], dtype=np.int32))
 
     def test_check_numerics(self):
-        rate = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.int32, [])
+        rate = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.int32, [])
         poisson = Poisson(rate, check_numerics=True)
         log_p = poisson.log_prob(given)
         with self.session(use_gpu=True):
@@ -877,8 +877,8 @@ class TestBinomial(tf.test.TestCase):
             _ = Binomial(tf.ones([2]), 0)
 
         with self.session(use_gpu=True):
-            logits = tf.placeholder(tf.float32, None)
-            n_experiments = tf.placeholder(tf.int32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
+            n_experiments = tf.compat.v1.placeholder(tf.int32, None)
             dist2 = Binomial(logits, n_experiments)
             with self.assertRaisesRegexp(tf.errors.InvalidArgumentError,
                                          "should be a scalar"):
@@ -891,7 +891,7 @@ class TestBinomial(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        binomial = Binomial(tf.placeholder(tf.float32, None), 10)
+        binomial = Binomial(tf.compat.v1.placeholder(tf.float32, None), 10)
         self.assertEqual(binomial.get_value_shape().as_list(), [])
 
         # dynamic
@@ -947,8 +947,8 @@ class TestBinomial(tf.test.TestCase):
                         19 * np.ones([3, 1, 2, 3], dtype=np.int32))
 
     def test_check_numerics(self):
-        logits = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.int32, [])
+        logits = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.int32, [])
         binomial = Binomial(logits, 10, check_numerics=True)
         log_p = binomial.log_prob(given)
         with self.session(use_gpu=True):
@@ -967,7 +967,7 @@ class TestBinomial(tf.test.TestCase):
         utils.test_dtype_1parameter_discrete(self, _distribution)
 
         with self.assertRaisesRegexp(TypeError, "n_experiments must be"):
-            Binomial(1., tf.placeholder(tf.float32, []))
+            Binomial(1., tf.compat.v1.placeholder(tf.float32, []))
 
 
 class TestInverseGamma(tf.test.TestCase):
@@ -977,13 +977,13 @@ class TestInverseGamma(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 InverseGamma(alpha=tf.ones([2, 1]), beta=tf.ones([2, 4, 3]))
 
-        InverseGamma(tf.placeholder(tf.float32, [None, 1]),
-                     tf.placeholder(tf.float32, [None, 1, 3]))
+        InverseGamma(tf.compat.v1.placeholder(tf.float32, [None, 1]),
+                     tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        inv_gamma = InverseGamma(alpha=tf.placeholder(tf.float32, None),
-                                 beta=tf.placeholder(tf.float32, None))
+        inv_gamma = InverseGamma(alpha=tf.compat.v1.placeholder(tf.float32, None),
+                                 beta=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(inv_gamma.get_value_shape().as_list(), [])
 
         # dynamic
@@ -1024,9 +1024,9 @@ class TestInverseGamma(tf.test.TestCase):
             _test_value([1e-8, 1e8], [[1., 1e8], [1e-8, 5.]], [7.])
 
     def test_check_numerics(self):
-        alpha = tf.placeholder(tf.float32, [])
-        beta = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.float32, [])
+        alpha = tf.compat.v1.placeholder(tf.float32, [])
+        beta = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.float32, [])
         inv_gamma = InverseGamma(alpha, beta, check_numerics=True)
         log_p = inv_gamma.log_prob(given)
         with self.session(use_gpu=True):
@@ -1051,13 +1051,13 @@ class TestLaplace(tf.test.TestCase):
                                          "should be broadcastable to match"):
                 Laplace(loc=tf.ones([2, 1]), scale=tf.ones([2, 4, 3]))
 
-        Laplace(tf.placeholder(tf.float32, [None, 1]),
-                tf.placeholder(tf.float32, [None, 1, 3]))
+        Laplace(tf.compat.v1.placeholder(tf.float32, [None, 1]),
+                tf.compat.v1.placeholder(tf.float32, [None, 1, 3]))
 
     def test_value_shape(self):
         # static
-        laplace = Laplace(loc=tf.placeholder(tf.float32, None),
-                          scale=tf.placeholder(tf.float32, None))
+        laplace = Laplace(loc=tf.compat.v1.placeholder(tf.float32, None),
+                          scale=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(laplace.get_value_shape().as_list(), [])
 
         # dynamic
@@ -1077,13 +1077,13 @@ class TestLaplace(tf.test.TestCase):
         loc = tf.ones([2, 3])
         scale = tf.ones([2, 3])
         laplace_rep = Laplace(loc, scale)
-        samples = laplace_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = laplace_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         loc_grads, scale_grads = tf.gradients(samples, [loc, scale])
         self.assertTrue(loc_grads is not None)
         self.assertTrue(scale_grads is not None)
 
         laplace_no_rep = Laplace(loc, scale, is_reparameterized=False)
-        samples = laplace_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = laplace_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         loc_grads, scale_grads = tf.gradients(samples, [loc, scale])
         self.assertEqual(loc_grads, None)
         self.assertEqual(scale_grads, None)
@@ -1091,7 +1091,7 @@ class TestLaplace(tf.test.TestCase):
     def test_path_derivative(self):
         loc = tf.ones([2, 3])
         scale = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         laplace_rep = Laplace(loc, scale, use_path_derivative=True)
         samples = laplace_rep.sample(n_samples)
@@ -1141,9 +1141,9 @@ class TestLaplace(tf.test.TestCase):
             _test_value([1e-5, -1e-5], [[1., 10.], [1e8, 5.]], [7.])
 
     def test_check_numerics(self):
-        loc = tf.placeholder(tf.float32, [])
-        scale = tf.placeholder(tf.float32, [])
-        given = tf.placeholder(tf.float32, [])
+        loc = tf.compat.v1.placeholder(tf.float32, [])
+        scale = tf.compat.v1.placeholder(tf.float32, [])
+        given = tf.compat.v1.placeholder(tf.float32, [])
         laplace = Laplace(loc, scale, check_numerics=True)
         log_p = laplace.log_prob(given)
         with self.session(use_gpu=True):
@@ -1162,7 +1162,7 @@ class TestBinConcrete(tf.test.TestCase):
             BinConcrete([1.], [1., 2.])
 
         with self.session(use_gpu=True):
-            temperature = tf.placeholder(tf.float32, None)
+            temperature = tf.compat.v1.placeholder(tf.float32, None)
             con = BinConcrete(temperature, [1., 2.])
             with self.assertRaisesRegexp(tf.errors.InvalidArgumentError,
                                          "should be a scalar"):
@@ -1170,7 +1170,7 @@ class TestBinConcrete(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        con = BinConcrete(1., logits=tf.placeholder(tf.float32, None))
+        con = BinConcrete(1., logits=tf.compat.v1.placeholder(tf.float32, None))
         self.assertEqual(con.get_value_shape().as_list(), [])
 
         # dynamic
@@ -1227,13 +1227,13 @@ class TestBinConcrete(tf.test.TestCase):
         temperature = tf.ones([])
         logits = tf.ones([2, 3])
         con_rep = BinConcrete(temperature, logits)
-        samples = con_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertTrue(t_grads is not None)
         self.assertTrue(logits_grads is not None)
 
         con_no_rep = BinConcrete(temperature, logits, is_reparameterized=False)
-        samples = con_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertEqual(t_grads, None)
         self.assertEqual(logits_grads, None)
@@ -1241,7 +1241,7 @@ class TestBinConcrete(tf.test.TestCase):
     def test_path_derivative(self):
         temperature = tf.ones([])
         logits = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         con_rep = BinConcrete(temperature, logits, use_path_derivative=True)
         samples = con_rep.sample(n_samples)
@@ -1269,9 +1269,9 @@ class TestBinConcrete(tf.test.TestCase):
         self.assertTrue(logits_path_grads is None)
 
     def test_check_numerics(self):
-        tau = tf.placeholder(tf.float32, None)
-        logits = tf.placeholder(tf.float32, None)
-        given = tf.placeholder(tf.float32, None)
+        tau = tf.compat.v1.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
+        given = tf.compat.v1.placeholder(tf.float32, None)
         dist = BinConcrete(tau, logits, check_numerics=True)
         log_p = dist.log_prob(given)
         with self.session(use_gpu=True):

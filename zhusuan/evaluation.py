@@ -95,7 +95,7 @@ class AIS:
             prior_samples = proposal_meta_bn.observe().get(latent_k)
             log_prior = lambda obs: proposal_meta_bn.observe(**obs).log_joint()
 
-            self.temperature = tf.placeholder(tf.float32, shape=[],
+            self.temperature = tf.compat.v1.placeholder(tf.float32, shape=[],
                                               name="temperature")
 
             def log_fn(observed):

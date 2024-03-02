@@ -10,7 +10,7 @@ import zhusuan as zs
 class RBFKernel:
 
     def __init__(self, n_covariates, name='rbf_kernel', dtype=tf.float32):
-        k_raw_scale = tf.get_variable('k_log_scale_{}'.format(name),
+        k_raw_scale = tf.compat.v1.get_variable('k_log_scale_{}'.format(name),
                                       [n_covariates], dtype,
                                       initializer=tf.zeros_initializer())
         self.k_scale = tf.nn.softplus(k_raw_scale)

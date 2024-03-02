@@ -44,8 +44,8 @@ class TestStochasticTensor(tf.test.TestCase):
         Normal('a', 0., logstd=1.)
 
         # Test observation checks:
-        obs_int32 = tf.placeholder(tf.int32, None)
-        obs_float32 = tf.placeholder(tf.float32, None)
+        obs_int32 = tf.compat.v1.placeholder(tf.int32, None)
+        obs_float32 = tf.compat.v1.placeholder(tf.float32, None)
 
         # v3 logic
         with BayesianNet(observed={'a': obs_float32}) as bn:
@@ -211,7 +211,7 @@ class TestReuseVariables(tf.test.TestCase):
     def test_reuse_variables(self):
         @reuse_variables("test")
         def f():
-            w = tf.get_variable("w", shape=[])
+            w = tf.compat.v1.get_variable("w", shape=[])
             return w
 
         w1 = f()
@@ -223,7 +223,7 @@ class TestReuseVariables(tf.test.TestCase):
     @staticmethod
     def _generate_bn(var_to_return):
         bn = BayesianNet()
-        a_mean = tf.get_variable('a', initializer=tf.constant(0.))
+        a_mean = tf.compat.v1.get_variable('a', initializer=tf.constant(0.))
         a = bn.normal('a', a_mean, logstd=1.)
         b = bn.normal('b', 0., logstd=1.)
         c = bn.normal('c', b, logstd=1.)

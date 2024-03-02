@@ -48,12 +48,12 @@ def get_acceptance_rate(q, p, new_q, new_p, log_posterior, mass, data_axes):
         q, p, log_posterior, mass, data_axes)
     new_hamiltonian, new_log_prob = hamiltonian(
         new_q, new_p, log_posterior, mass, data_axes)
-    old_log_prob = tf.check_numerics(
+    old_log_prob = tf.debugging.check_numerics(
         old_log_prob,
         'HMC: old_log_prob has numeric errors! Try better initialization.')
     acceptance_rate = tf.exp(
         tf.minimum(-new_hamiltonian + old_hamiltonian, 0.0))
-    is_finite = tf.logical_and(tf.is_finite(acceptance_rate),
+    is_finite = tf.math.logical_and(tf.is_finite(acceptance_rate),
                                tf.is_finite(new_log_prob))
     acceptance_rate = tf.where(is_finite, acceptance_rate,
                                tf.zeros_like(acceptance_rate))
@@ -332,7 +332,7 @@ class HMC:
                 lambda: step_size * (1.0 / factor),
                 lambda: step_size * factor)
 
-            cond = tf.logical_not(tf.logical_xor(
+            cond = tf.math.logical_not(tf.math.logical_xor(
                 tf.less(last_acceptance_rate, self.target_acceptance_rate),
                 tf.less(acceptance_rate, self.target_acceptance_rate)))
             return [new_step_size, acceptance_rate, cond]
@@ -354,7 +354,7 @@ class HMC:
                                  lambda: step_size,
                                  lambda: tf.constant(0.0, dtype=tf.float32))
 
-            step_size2 = tf.cond(tf.logical_and(tf.less(i, self.n_leapfrogs),
+            step_size2 = tf.cond(tf.math.logical_and(tf.less(i, self.n_leapfrogs),
                                                 tf.less(0, i)),
                                  lambda: step_size,
                                  lambda: step_size / 2)
@@ -463,7 +463,7 @@ class HMC:
         if self.adapt_step_size is None:
             new_step_size = self.step_size
         else:
-            if_initialize_step_size = tf.logical_or(tf.equal(new_t, 1),
+            if_initialize_step_size = tf.math.logical_or(tf.equal(new_t, 1),
                 tf.equal(tf.cast(new_t, tf.int32), self.mass_collect_iters))
             def iss():
                 return self._init_step_size(current_q, current_p, mass,
@@ -490,7 +490,7 @@ class HMC:
                 expanded_if_accept = if_accept
                 for i in range(len(da)):
                     expanded_if_accept = tf.expand_dims(expanded_if_accept, -1)
-                expanded_if_accept = tf.logical_and(
+                expanded_if_accept = tf.math.logical_and(
                     expanded_if_accept, tf.ones_like(nq, dtype=tf.bool))
                 new_q.append(tf.where(expanded_if_accept, nq, oq))
 

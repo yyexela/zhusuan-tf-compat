@@ -90,7 +90,7 @@ def conv2d_transpose(
     filter_shape = [kernel_size[0], kernel_size[1], out_shape[2], in_channels]
 
     with tf.variable_scope(scope, 'Conv2d_transpose', [inputs], reuse=reuse):
-        w = tf.get_variable('weights', filter_shape,
+        w = tf.compat.v1.get_variable('weights', filter_shape,
                             initializer=weights_initializer)
 
         outputs = tf.nn.conv2d_transpose(
@@ -99,7 +99,7 @@ def conv2d_transpose(
         outputs.set_shape([None] + out_shape)
 
         if not normalizer_fn:
-            biases = tf.get_variable('biases', [out_shape[2]],
+            biases = tf.compat.v1.get_variable('biases', [out_shape[2]],
                                      initializer=tf.constant_initializer(0.0))
             outputs = tf.nn.bias_add(outputs, biases)
 

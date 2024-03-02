@@ -64,7 +64,7 @@ def build_model(hps, kernel, z_pos, x, n_particles, full_cov=False):
     fx_given_fz = bn.stochastic(
         'fx', gp_conditional(z_pos, fz, x, full_cov, kernel, Kzz_chol))
     # Y|f(X) ~ N(f(X), noise_level * I)
-    noise_level = tf.get_variable(
+    noise_level = tf.compat.v1.get_variable(
         'noise_level', shape=[], dtype=hps.dtype,
         initializer=tf.constant_initializer(0.05))
     noise_level = tf.nn.softplus(noise_level)
@@ -74,9 +74,9 @@ def build_model(hps, kernel, z_pos, x, n_particles, full_cov=False):
 
 def build_variational(hps, kernel, z_pos, x, n_particles):
     bn = zs.BayesianNet()
-    z_mean = tf.get_variable(
+    z_mean = tf.compat.v1.get_variable(
         'z/mean', [hps.n_z], hps.dtype, tf.zeros_initializer())
-    z_cov_raw = tf.get_variable(
+    z_cov_raw = tf.compat.v1.get_variable(
         'z/cov_raw', initializer=tf.eye(hps.n_z, dtype=hps.dtype))
     z_cov_tril = tf.matrix_set_diag(
         tf.matrix_band_part(z_cov_raw, -1, 0),
@@ -108,12 +108,12 @@ def main():
 
     # Build model
     kernel = RBFKernel(n_covariates)
-    x_ph = tf.placeholder(hps.dtype, [None, n_covariates], 'x')
-    y_ph = tf.placeholder(hps.dtype, [None], 'y')
-    z_pos = tf.get_variable(
+    x_ph = tf.compat.v1.placeholder(hps.dtype, [None, n_covariates], 'x')
+    y_ph = tf.compat.v1.placeholder(hps.dtype, [None], 'y')
+    z_pos = tf.compat.v1.get_variable(
         'z/pos', [hps.n_z, n_covariates], hps.dtype,
         initializer=tf.random_uniform_initializer(-1, 1))
-    n_particles_ph = n_particles_ph = tf.placeholder(
+    n_particles_ph = n_particles_ph = tf.compat.v1.placeholder(
         tf.int32, [], 'n_particles')
     batch_size = tf.cast(tf.shape(x_ph)[0], hps.dtype)
 
@@ -145,7 +145,7 @@ def main():
     log_likelihood = model.cond_log_prob('y')
     std_y_train = tf.cast(std_y_train, hps.dtype)
     log_likelihood = zs.log_mean_exp(log_likelihood, 0) / batch_size - \
-        tf.log(std_y_train)
+        tf.math.log(std_y_train)
     y_pred_mean = tf.reduce_mean(model['y'].distribution.mean, axis=0)
     pred_mse = tf.reduce_mean((y_pred_mean - y_ph) ** 2) * std_y_train ** 2
 

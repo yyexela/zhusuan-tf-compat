@@ -24,8 +24,8 @@ class TestMultivariateNormalCholesky(tf.test.TestCase):
                 MultivariateNormalCholesky(tf.zeros([1]), tf.zeros([1]))
             with self.assertRaisesRegexp(ValueError, 'compatible'):
                 MultivariateNormalCholesky(
-                    tf.zeros([1, 2]), tf.placeholder(tf.float32, [1, 2, 3]))
-            u = tf.placeholder(tf.float32, [None])
+                    tf.zeros([1, 2]), tf.compat.v1.placeholder(tf.float32, [1, 2, 3]))
+            u = tf.compat.v1.placeholder(tf.float32, [None])
             len_u = tf.shape(u)[0]
             dst = MultivariateNormalCholesky(
                 tf.zeros([2]), tf.zeros([len_u, len_u]))
@@ -43,8 +43,8 @@ class TestMultivariateNormalCholesky(tf.test.TestCase):
             self.assertEqual(dst.get_batch_shape().as_list(), [10, 11])
             self.assertEqual(dst.get_value_shape().as_list(), [2])
             # Dynamic
-            unk_mean = tf.placeholder(tf.float32, None)
-            unk_cov = tf.placeholder(tf.float32, None)
+            unk_mean = tf.compat.v1.placeholder(tf.float32, None)
+            unk_cov = tf.compat.v1.placeholder(tf.float32, None)
             dst = MultivariateNormalCholesky(unk_mean, unk_cov)
             self.assertEqual(dst.get_value_shape().as_list(), [None])
             feed_dict = {unk_mean: np.ones(2), unk_cov: np.eye(2)}
@@ -124,13 +124,13 @@ class TestMultivariateNormalCholesky(tf.test.TestCase):
         mean = tf.constant(mean)
         cov_chol = tf.constant(cov_chol)
         mvn_rep = MultivariateNormalCholesky(mean, cov_chol)
-        samples = mvn_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = mvn_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, cov_grads = tf.gradients(samples, [mean, cov_chol])
         self.assertTrue(mean_grads is not None)
         self.assertTrue(cov_grads is not None)
         mvn_no_rep = MultivariateNormalCholesky(
                 mean, cov_chol, is_reparameterized=False)
-        samples = mvn_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = mvn_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, cov_grads = tf.gradients(samples, [mean, cov_chol])
         self.assertEqual(mean_grads, None)
         self.assertEqual(cov_grads, None)
@@ -150,8 +150,8 @@ class TestMultinomial(tf.test.TestCase):
         self.assertEqual(dist.n_experiments, 10)
 
         with self.session(use_gpu=True) as sess:
-            logits = tf.placeholder(tf.float32, None)
-            n_experiments = tf.placeholder(tf.int32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
+            n_experiments = tf.compat.v1.placeholder(tf.int32, None)
             dist2 = Multinomial(logits, n_experiments=n_experiments)
             self.assertEqual(
                 sess.run([dist2.n_categories, dist2.n_experiments],
@@ -172,12 +172,12 @@ class TestMultinomial(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        dist = Multinomial(tf.placeholder(tf.float32, [None, 2]),
+        dist = Multinomial(tf.compat.v1.placeholder(tf.float32, [None, 2]),
                            n_experiments=10)
         self.assertEqual(dist.get_value_shape().as_list(), [2])
 
         # dynamic
-        logits = tf.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
         dist2 = Multinomial(logits, n_experiments=10)
         self.assertTrue(dist2._value_shape().dtype is tf.int32)
         with self.session(use_gpu=True):
@@ -258,7 +258,7 @@ class TestMultinomial(tf.test.TestCase):
         utils.test_dtype_1parameter_discrete(self, _distribution)
 
         with self.assertRaisesRegexp(TypeError, "n_experiments must be"):
-            Multinomial([1., 1.], n_experiments=tf.placeholder(tf.float32, []))
+            Multinomial([1., 1.], n_experiments=tf.compat.v1.placeholder(tf.float32, []))
         with self.assertRaisesRegexp(TypeError,
                                      "n_experiments must be integer"):
             Multinomial([1., 1.], n_experiments=2.0)
@@ -276,7 +276,7 @@ class TestUnnormalizedMultinomial(tf.test.TestCase):
         self.assertEqual(dist.n_categories, 2)
 
         with self.session(use_gpu=True) as sess:
-            logits = tf.placeholder(tf.float32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
             dist2 = UnnormalizedMultinomial(logits)
             self.assertEqual(
                 sess.run(dist2.n_categories, feed_dict={logits: np.ones([2])}),
@@ -287,11 +287,11 @@ class TestUnnormalizedMultinomial(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        dist = UnnormalizedMultinomial(tf.placeholder(tf.float32, [None, 2]))
+        dist = UnnormalizedMultinomial(tf.compat.v1.placeholder(tf.float32, [None, 2]))
         self.assertEqual(dist.get_value_shape().as_list(), [2])
 
         # dynamic
-        logits = tf.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
         dist2 = UnnormalizedMultinomial(logits)
         self.assertTrue(dist2._value_shape().dtype is tf.int32)
         with self.session(use_gpu=True):
@@ -370,7 +370,7 @@ class TestOnehotCategorical(tf.test.TestCase):
         self.assertEqual(cat.n_categories, 10)
 
         with self.session(use_gpu=True):
-            logits = tf.placeholder(tf.float32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
             cat2 = OnehotCategorical(logits)
             self.assertEqual(
                 cat2.n_categories.eval(feed_dict={logits: np.ones([10])}), 10)
@@ -380,11 +380,11 @@ class TestOnehotCategorical(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        cat = OnehotCategorical(tf.placeholder(tf.float32, [None, 10]))
+        cat = OnehotCategorical(tf.compat.v1.placeholder(tf.float32, [None, 10]))
         self.assertEqual(cat.get_value_shape().as_list(), [10])
 
         # dynamic
-        logits = tf.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
         cat2 = OnehotCategorical(logits)
         self.assertTrue(cat2._value_shape().dtype is tf.int32)
         with self.session(use_gpu=True):
@@ -460,11 +460,11 @@ class TestDirichlet(tf.test.TestCase):
         with self.assertRaisesRegexp(ValueError,
                                      "n_categories.*should be at least 2"):
             Dirichlet(tf.ones([3, 1]))
-        dist2 = Dirichlet(tf.placeholder(tf.float32, [3, None]))
+        dist2 = Dirichlet(tf.compat.v1.placeholder(tf.float32, [3, None]))
         self.assertTrue(dist2.n_categories is not None)
 
         with self.session(use_gpu=True):
-            alpha = tf.placeholder(tf.float32, None)
+            alpha = tf.compat.v1.placeholder(tf.float32, None)
             dist3 = Dirichlet(alpha)
             self.assertEqual(
                 dist3.n_categories.eval(feed_dict={alpha: np.ones([10])}), 10)
@@ -474,11 +474,11 @@ class TestDirichlet(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        dist = Dirichlet(tf.placeholder(tf.float32, [None, 10]))
+        dist = Dirichlet(tf.compat.v1.placeholder(tf.float32, [None, 10]))
         self.assertEqual(dist.get_value_shape().as_list(), [10])
 
         # dynamic
-        alpha = tf.placeholder(tf.float32, None)
+        alpha = tf.compat.v1.placeholder(tf.float32, None)
         dist2 = Dirichlet(alpha)
         self.assertEqual(dist2.get_value_shape().as_list(), [None])
         self.assertTrue(dist2._value_shape().dtype is tf.int32)
@@ -561,8 +561,8 @@ class TestDirichlet(tf.test.TestCase):
                                                 [[0., 1.], [1., 0.]])
 
     def test_check_numerics(self):
-        alpha = tf.placeholder(tf.float32, None)
-        given = tf.placeholder(tf.float32, None)
+        alpha = tf.compat.v1.placeholder(tf.float32, None)
+        given = tf.compat.v1.placeholder(tf.float32, None)
         dist = Dirichlet(alpha, check_numerics=True)
         log_p = dist.log_prob(given)
         with self.session(use_gpu=True):
@@ -589,7 +589,7 @@ class TestExpConcrete(tf.test.TestCase):
         self.assertEqual(con.n_categories, 10)
 
         with self.session(use_gpu=True):
-            logits = tf.placeholder(tf.float32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
             con2 = ExpConcrete(1., logits)
             self.assertEqual(
                 con2.n_categories.eval(feed_dict={logits: np.ones([10])}), 10)
@@ -603,7 +603,7 @@ class TestExpConcrete(tf.test.TestCase):
             ExpConcrete([1.], [1., 2.])
 
         with self.session(use_gpu=True):
-            temperature = tf.placeholder(tf.float32, None)
+            temperature = tf.compat.v1.placeholder(tf.float32, None)
             con = ExpConcrete(temperature, [1., 2.])
             with self.assertRaisesRegexp(tf.errors.InvalidArgumentError,
                                          "should be a scalar"):
@@ -611,11 +611,11 @@ class TestExpConcrete(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        con = ExpConcrete(1., tf.placeholder(tf.float32, [None, 10]))
+        con = ExpConcrete(1., tf.compat.v1.placeholder(tf.float32, [None, 10]))
         self.assertEqual(con.get_value_shape().as_list(), [10])
 
         # dynamic
-        logits = tf.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
         con2 = ExpConcrete(1., logits)
         self.assertTrue(con2._value_shape().dtype is tf.int32)
         with self.session(use_gpu=True):
@@ -680,13 +680,13 @@ class TestExpConcrete(tf.test.TestCase):
         temperature = tf.constant(1.0)
         logits = tf.ones([2, 3])
         con_rep = ExpConcrete(temperature, logits)
-        samples = con_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertTrue(t_grads is not None)
         self.assertTrue(logits_grads is not None)
 
         con_no_rep = ExpConcrete(temperature, logits, is_reparameterized=False)
-        samples = con_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertEqual(t_grads, None)
         self.assertEqual(logits_grads, None)
@@ -694,7 +694,7 @@ class TestExpConcrete(tf.test.TestCase):
     def test_path_derivative(self):
         temperature = tf.constant(1.0)
         logits = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         con_rep = ExpConcrete(temperature, logits, use_path_derivative=True)
         samples = con_rep.sample(n_samples)
@@ -722,9 +722,9 @@ class TestExpConcrete(tf.test.TestCase):
         self.assertTrue(logits_path_grads is None)
 
     def test_check_numerics(self):
-        tau = tf.placeholder(tf.float32, None)
-        logits = tf.placeholder(tf.float32, None)
-        given = tf.placeholder(tf.float32, None)
+        tau = tf.compat.v1.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
+        given = tf.compat.v1.placeholder(tf.float32, None)
         dist = ExpConcrete(tau, logits, check_numerics=True)
         log_p = dist.log_prob(given)
         with self.session(use_gpu=True):
@@ -750,7 +750,7 @@ class TestConcrete(tf.test.TestCase):
         self.assertEqual(con.n_categories, 10)
 
         with self.session(use_gpu=True):
-            logits = tf.placeholder(tf.float32, None)
+            logits = tf.compat.v1.placeholder(tf.float32, None)
             con2 = Concrete(1., logits)
             self.assertEqual(
                 con2.n_categories.eval(feed_dict={logits: np.ones([10])}), 10)
@@ -764,7 +764,7 @@ class TestConcrete(tf.test.TestCase):
             Concrete([1.], [1., 2.])
 
         with self.session(use_gpu=True):
-            temperature = tf.placeholder(tf.float32, None)
+            temperature = tf.compat.v1.placeholder(tf.float32, None)
             con = Concrete(temperature, [1., 2.])
             with self.assertRaisesRegexp(tf.errors.InvalidArgumentError,
                                          "should be a scalar"):
@@ -772,11 +772,11 @@ class TestConcrete(tf.test.TestCase):
 
     def test_value_shape(self):
         # static
-        con = Concrete(1., tf.placeholder(tf.float32, [None, 10]))
+        con = Concrete(1., tf.compat.v1.placeholder(tf.float32, [None, 10]))
         self.assertEqual(con.get_value_shape().as_list(), [10])
 
         # dynamic
-        logits = tf.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
         con2 = Concrete(1., logits)
         self.assertTrue(con2._value_shape().dtype is tf.int32)
         with self.session(use_gpu=True):
@@ -841,13 +841,13 @@ class TestConcrete(tf.test.TestCase):
         temperature = tf.constant(1.0)
         logits = tf.ones([2, 3])
         con_rep = Concrete(temperature, logits)
-        samples = con_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertTrue(t_grads is not None)
         self.assertTrue(logits_grads is not None)
 
         con_no_rep = Concrete(temperature, logits, is_reparameterized=False)
-        samples = con_no_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = con_no_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         t_grads, logits_grads = tf.gradients(samples, [temperature, logits])
         self.assertEqual(t_grads, None)
         self.assertEqual(logits_grads, None)
@@ -855,7 +855,7 @@ class TestConcrete(tf.test.TestCase):
     def test_path_derivative(self):
         temperature = tf.constant(1.0)
         logits = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
 
         con_rep = Concrete(temperature, logits, use_path_derivative=True)
         samples = con_rep.sample(n_samples)
@@ -883,9 +883,9 @@ class TestConcrete(tf.test.TestCase):
         self.assertTrue(logits_path_grads is None)
 
     def test_check_numerics(self):
-        tau = tf.placeholder(tf.float32, None)
-        logits = tf.placeholder(tf.float32, None)
-        given = tf.placeholder(tf.float32, None)
+        tau = tf.compat.v1.placeholder(tf.float32, None)
+        logits = tf.compat.v1.placeholder(tf.float32, None)
+        given = tf.compat.v1.placeholder(tf.float32, None)
         dist = Concrete(tau, logits, check_numerics=True)
         log_p = dist.log_prob(given)
         with self.session(use_gpu=True):
@@ -922,21 +922,21 @@ class TestMatrixVariateNormalCholesky(tf.test.TestCase):
             with self.assertRaisesRegexp(ValueError, 'compatible'):
                 MatrixVariateNormalCholesky(
                     tf.zeros([1, 2, 3]),
-                    tf.placeholder(tf.float32, [1, 3, 3]),
-                    tf.placeholder(tf.float32, [1, 3, 3]))
+                    tf.compat.v1.placeholder(tf.float32, [1, 3, 3]),
+                    tf.compat.v1.placeholder(tf.float32, [1, 3, 3]))
             with self.assertRaisesRegexp(ValueError, 'compatible'):
                 MatrixVariateNormalCholesky(
                     tf.zeros([1, 2, 3]),
-                    tf.placeholder(tf.float32, [1, 2, 2]),
-                    tf.placeholder(tf.float32, [1, 2, 2]))
+                    tf.compat.v1.placeholder(tf.float32, [1, 2, 2]),
+                    tf.compat.v1.placeholder(tf.float32, [1, 2, 2]))
             with self.assertRaisesRegexp(ValueError, 'compatible'):
                 MatrixVariateNormalCholesky(
                     tf.zeros([2, 3]),
-                    tf.placeholder(tf.float32, [1, 2, 2]),
-                    tf.placeholder(tf.float32, [1, 3, 3]))
-            u = tf.placeholder(tf.float32, [None])
+                    tf.compat.v1.placeholder(tf.float32, [1, 2, 2]),
+                    tf.compat.v1.placeholder(tf.float32, [1, 3, 3]))
+            u = tf.compat.v1.placeholder(tf.float32, [None])
             len_u = tf.shape(u)[0]
-            v = tf.placeholder(tf.float32, [None])
+            v = tf.compat.v1.placeholder(tf.float32, [None])
             len_v = tf.shape(v)[0]
             dst = MatrixVariateNormalCholesky(
                 tf.zeros([2, 3]), tf.zeros([len_u, len_u]),
@@ -959,9 +959,9 @@ class TestMatrixVariateNormalCholesky(tf.test.TestCase):
             self.assertEqual(dst.get_batch_shape().as_list(), [10, 11])
             self.assertEqual(dst.get_value_shape().as_list(), [2, 3])
             # Dynamic
-            unk_mean = tf.placeholder(tf.float32, None)
-            unk_u_tril = tf.placeholder(tf.float32, None)
-            unk_v_tril = tf.placeholder(tf.float32, None)
+            unk_mean = tf.compat.v1.placeholder(tf.float32, None)
+            unk_u_tril = tf.compat.v1.placeholder(tf.float32, None)
+            unk_v_tril = tf.compat.v1.placeholder(tf.float32, None)
             dst = MatrixVariateNormalCholesky(unk_mean, unk_u_tril, unk_v_tril)
             self.assertEqual(dst.get_value_shape().as_list(), [None, None])
             feed_dict = {unk_mean: np.ones((2, 3)), unk_u_tril: np.eye(2),
@@ -1054,7 +1054,7 @@ class TestMatrixVariateNormalCholesky(tf.test.TestCase):
         u_chol = tf.constant(u_chol)
         v_chol = tf.constant(v_chol)
         mvn_rep = MatrixVariateNormalCholesky(mean, u_chol, v_chol)
-        samples = mvn_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = mvn_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, u_grads, v_grads = tf.gradients(
             samples, [mean, u_chol, v_chol])
         self.assertTrue(mean_grads is not None)
@@ -1062,7 +1062,7 @@ class TestMatrixVariateNormalCholesky(tf.test.TestCase):
         self.assertTrue(v_grads is not None)
         mvn_rep = MatrixVariateNormalCholesky(mean, u_chol, v_chol,
                                               is_reparameterized=False)
-        samples = mvn_rep.sample(tf.placeholder(tf.int32, shape=[]))
+        samples = mvn_rep.sample(tf.compat.v1.placeholder(tf.int32, shape=[]))
         mean_grads, u_grads, v_grads = tf.gradients(
             samples, [mean, u_chol, v_chol])
         self.assertEqual(mean_grads, None)

@@ -43,7 +43,7 @@ def q(n, net_size, n_particles):
     bn = zs.BayesianNet()
     for i, [n_in, n_out] in enumerate(zip(net_size[:-1], net_size[1:])):
         with tf.variable_scope('layer' + str(i)):
-            logit_alpha = tf.get_variable('logit_alpha', [n_in])
+            logit_alpha = tf.compat.v1.get_variable('logit_alpha', [n_in])
 
         std = tf.sqrt(tf.nn.sigmoid(logit_alpha) + 1e-10)
         std = tf.tile(tf.expand_dims(std, 0), [n, 1])
@@ -78,10 +78,10 @@ if __name__ == '__main__':
     anneal_lr_rate = 0.75
 
     # placeholders
-    n_particles = tf.placeholder(tf.int32, shape=[], name='n_particles')
-    is_training = tf.placeholder(tf.bool, shape=[], name='is_training')
-    x = tf.placeholder(tf.float32, shape=(None, n_x))
-    y = tf.placeholder(tf.int32, shape=(None))
+    n_particles = tf.compat.v1.placeholder(tf.int32, shape=[], name='n_particles')
+    is_training = tf.compat.v1.placeholder(tf.bool, shape=[], name='is_training')
+    x = tf.compat.v1.placeholder(tf.float32, shape=(None, n_x))
+    y = tf.compat.v1.placeholder(tf.int32, shape=(None))
     n = tf.shape(x)[0]
 
     net_size = [n_x, 100, 100, 100, 10]
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     acc = tf.reduce_mean(tf.cast(tf.equal(y_pred, y), tf.float32))
 
     cost = tf.reduce_mean(lower_bound.sgvb()) / x_train.shape[0]
-    learning_rate_ph = tf.placeholder(tf.float32, shape=())
+    learning_rate_ph = tf.compat.v1.placeholder(tf.float32, shape=())
     optimizer = tf.train.AdamOptimizer(learning_rate_ph, epsilon=1e-4)
     infer = optimizer.minimize(cost)
 

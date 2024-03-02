@@ -20,8 +20,8 @@ class TestNormal(tf.test.TestCase):
         mean = tf.zeros([2, 3])
         logstd = tf.zeros([2, 3])
         std = tf.exp(logstd)
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.normal('a', mean, logstd=logstd, n_samples=n_samples,
                       group_ndims=group_ndims)
         b = bn.normal('b', mean, std=std, n_samples=n_samples,
@@ -42,8 +42,8 @@ class TestBernoulli(tf.test.TestCase):
     def test_Bernoulli(self):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.bernoulli('a', logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, n_samples]:
@@ -59,8 +59,8 @@ class TestCategorical(tf.test.TestCase):
     def test_Discrete(self):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=())
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=())
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.categorical('a', logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, n_samples]:
@@ -77,8 +77,8 @@ class TestUniform(tf.test.TestCase):
         bn = BayesianNet()
         minval = tf.zeros([2, 3])
         maxval = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.uniform('a', minval, maxval, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [minval, maxval, n_samples]:
@@ -95,8 +95,8 @@ class TestGamma(tf.test.TestCase):
         bn = BayesianNet()
         alpha = tf.ones([2, 3])
         beta = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.gamma('a', alpha, beta, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [alpha, beta, n_samples]:
@@ -113,8 +113,8 @@ class TestBeta(tf.test.TestCase):
         bn = BayesianNet()
         alpha = tf.ones([2, 3])
         beta = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.beta('a', alpha, beta, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [alpha, beta, n_samples]:
@@ -130,8 +130,8 @@ class TestPoisson(tf.test.TestCase):
     def test_Poisson(self):
         bn = BayesianNet()
         rate = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.poisson('a', rate, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [rate, n_samples]:
@@ -147,9 +147,9 @@ class TestBinomial(tf.test.TestCase):
     def test_Binomial(self):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
-        n_experiments = tf.placeholder(tf.int32, shape=[])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_experiments = tf.compat.v1.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.binomial('a', logits, n_experiments, n_samples,
                         group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
@@ -166,9 +166,9 @@ class TestMultinomial(tf.test.TestCase):
     def test_Multinomial(self):
         bn = BayesianNet()
         logits = tf.ones([2, 3])
-        n_experiments = tf.placeholder(tf.int32, shape=[])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_experiments = tf.compat.v1.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.multinomial('a', logits, n_experiments=n_experiments,
                            n_samples=n_samples,
                            group_ndims=group_ndims)
@@ -186,7 +186,7 @@ class TestUnnormalizedMultinomial(tf.test.TestCase):
     def test_UnnormalizedMultinomial(self):
         bn = BayesianNet()
         logits = tf.ones([2, 3])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.unnormalized_multinomial('a', logits, group_ndims=group_ndims)
         log_p = a.log_prob(np.ones([2, 3], dtype=np.int32))
         log_p_ops = set(get_backward_ops(log_p))
@@ -198,8 +198,8 @@ class TestOnehotCategorical(tf.test.TestCase):
     def test_OnehotCategorical(self):
         bn = BayesianNet()
         logits = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.onehot_categorical('a', logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, n_samples]:
@@ -215,8 +215,8 @@ class TestDirichlet(tf.test.TestCase):
     def test_Dirichlet(self):
         bn = BayesianNet()
         alpha = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.dirichlet('a', alpha, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [alpha, n_samples]:
@@ -233,8 +233,8 @@ class TestInverseGamma(tf.test.TestCase):
         bn = BayesianNet()
         alpha = tf.ones([2, 3])
         beta = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.inverse_gamma('a', alpha, beta, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [alpha, beta, n_samples]:
@@ -251,8 +251,8 @@ class TestLaplace(tf.test.TestCase):
         bn = BayesianNet()
         loc = tf.zeros([2, 3])
         scale = tf.ones([2, 3])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.laplace('a', loc, scale, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [loc, scale, n_samples]:
@@ -269,8 +269,8 @@ class TestBinConcrete(tf.test.TestCase):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
         tau = tf.ones([])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.bin_concrete('a', tau, logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, tau, n_samples]:
@@ -287,8 +287,8 @@ class TestConcrete(tf.test.TestCase):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
         tau = tf.ones([])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.concrete('a', tau, logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, tau, n_samples]:
@@ -305,8 +305,8 @@ class TestExpConcrete(tf.test.TestCase):
         bn = BayesianNet()
         logits = tf.zeros([2, 3])
         tau = tf.ones([])
-        n_samples = tf.placeholder(tf.int32, shape=[])
-        group_ndims = tf.placeholder(tf.int32, shape=[])
+        n_samples = tf.compat.v1.placeholder(tf.int32, shape=[])
+        group_ndims = tf.compat.v1.placeholder(tf.int32, shape=[])
         a = bn.exp_concrete('a', tau, logits, n_samples, group_ndims)
         sample_ops = set(get_backward_ops(a.tensor))
         for i in [logits, tau, n_samples]:

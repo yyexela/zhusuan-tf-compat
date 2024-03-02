@@ -161,7 +161,7 @@ def planar_normalizing_flow(samples, log_probs, n_iters):
             dot_prod = tf.matmul(param_w, aux_u, transpose_a=True)
             param_u = aux_u + param_w / tf.matmul(param_w, param_w,
                                                   transpose_a=True) \
-                * (tf.log(tf.exp(dot_prod) + 1) - 1 - dot_prod)
+                * (tf.math.log(tf.exp(dot_prod) + 1) - 1 - dot_prod)
             param_u = tf.transpose(param_u, name='param_u_%d' % iter)
             param_bs.append(param_b)
             param_ws.append(param_w)
@@ -190,7 +190,7 @@ def planar_normalizing_flow(samples, log_probs, n_iters):
         det_ja = scalar * (
             tf.constant(1.0, dtype=tf.float32) - reduce_act * reduce_act) \
             + tf.constant(1.0, dtype=tf.float32)
-        log_probs -= tf.log(det_ja)
+        log_probs -= tf.math.log(det_ja)
         z = z + tf.matmul(activation, param_u, name='update')
     z = tf.reshape(z, tf.shape(input_x))
     log_probs = tf.reshape(log_probs, tf.shape(input_x)[:-1])
@@ -280,11 +280,11 @@ def inv_autoregressive_flow(samples, hidden, log_probs, autoregressive_nn,
         if update == 'gru':
             sigma = tf.sigmoid(s)
             z = sigma * z + (1 - sigma) * m
-            joint_probs = joint_probs - tf.reduce_sum(tf.log(sigma), axis=-1)
+            joint_probs = joint_probs - tf.reduce_sum(tf.math.log(sigma), axis=-1)
 
         if update == 'normal':
             z = s * z + m
-            joint_probs = joint_probs - tf.reduce_sum(tf.log(s), axis=-1)
+            joint_probs = joint_probs - tf.reduce_sum(tf.math.log(s), axis=-1)
 
         z = tf.reverse(z, [-1])
 

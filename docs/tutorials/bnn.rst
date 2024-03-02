@@ -98,7 +98,7 @@ Next, we add an observation distribution (noise) to get a tractable
 likelihood when evaluating the probability::
 
     y_mean = bn.deterministic("y_mean", tf.squeeze(h, 2))
-    y_logstd = tf.get_variable("y_logstd", shape=[],
+    y_logstd = tf.compat.v1.get_variable("y_logstd", shape=[],
                                initializer=tf.constant_initializer(0.))
     bn.normal("y", y_mean, logstd=y_logstd)
 
@@ -118,7 +118,7 @@ Putting together and adding model reuse, the code for constructing a BNN is::
                 h = tf.nn.relu(h)
 
         y_mean = bn.deterministic("y_mean", tf.squeeze(h, 2))
-        y_logstd = tf.get_variable("y_logstd", shape=[],
+        y_logstd = tf.compat.v1.get_variable("y_logstd", shape=[],
                                    initializer=tf.constant_initializer(0.))
         bn.normal("y", y_mean, logstd=y_logstd)
         return bn
@@ -155,10 +155,10 @@ The code for above definition is::
     def build_mean_field_variational(layer_sizes, n_particles):
         bn = zs.BayesianNet()
         for i, (n_in, n_out) in enumerate(zip(layer_sizes[:-1], layer_sizes[1:])):
-            w_mean = tf.get_variable(
+            w_mean = tf.compat.v1.get_variable(
                 "w_mean_" + str(i), shape=[n_out, n_in + 1],
                 initializer=tf.constant_initializer(0.))
-            w_logstd = tf.get_variable(
+            w_logstd = tf.compat.v1.get_variable(
                 "w_logstd_" + str(i), shape=[n_out, n_in + 1],
                 initializer=tf.constant_initializer(0.))
             bn.normal("w" + str(i), w_mean, logstd=w_logstd,
@@ -323,7 +323,7 @@ All together, the code for evaluation is::
     y_pred = tf.reduce_mean(y_mean, 0)
     rmse = tf.sqrt(tf.reduce_mean((y_pred - y) ** 2)) * std_y_train
     log_py_xw = lower_bound.bn.cond_log_prob("y")
-    log_likelihood = tf.reduce_mean(zs.log_mean_exp(log_py_xw, 0)) - tf.log(
+    log_likelihood = tf.reduce_mean(zs.log_mean_exp(log_py_xw, 0)) - tf.math.log(
         std_y_train)
 
 Run gradient descent

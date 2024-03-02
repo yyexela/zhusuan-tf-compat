@@ -68,9 +68,9 @@ def main():
     z_dim = 40
 
     # Build the computation graph
-    is_training = tf.placeholder(tf.bool, shape=[], name='is_training')
-    n_particles = tf.placeholder(tf.int32, shape=[], name='n_particles')
-    x_input = tf.placeholder(tf.float32, shape=[None, x_dim], name='x')
+    is_training = tf.compat.v1.placeholder(tf.bool, shape=[], name='is_training')
+    n_particles = tf.compat.v1.placeholder(tf.int32, shape=[], name='n_particles')
+    x_input = tf.compat.v1.placeholder(tf.float32, shape=[None, x_dim], name='x')
     x = tf.cast(tf.less(tf.random_uniform(tf.shape(x_input)), x_input),
                 tf.int32)
     n = tf.shape(x)[0]
@@ -90,7 +90,7 @@ def main():
         zs.is_loglikelihood(model, {'x': x}, proposal=variational, axis=0))
 
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
-    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
         infer_op = optimizer.minimize(cost)
 

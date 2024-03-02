@@ -32,7 +32,7 @@ def build_mean_field_variational(n_particles):
 
 if __name__ == "__main__":
     # Build the computation graph
-    n_particles = tf.placeholder(tf.int32, shape=[])
+    n_particles = tf.compat.v1.placeholder(tf.int32, shape=[])
 
     model = build_toy2d_intractable(n_particles)
     variational = build_mean_field_variational(n_particles)

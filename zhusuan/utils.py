@@ -80,25 +80,25 @@ class TensorArithmeticMixin(object):
 
     # logical operations
     def __invert__(self):
-        return tf.logical_not(self)
+        return tf.math.logical_not(self)
 
     def __and__(self, other):
-        return tf.logical_and(self, other)
+        return tf.math.logical_and(self, other)
 
     def __rand__(self, other):
-        return tf.logical_and(other, self)
+        return tf.math.logical_and(other, self)
 
     def __or__(self, other):
-        return tf.logical_or(self, other)
+        return tf.math.logical_or(self, other)
 
     def __ror__(self, other):
-        return tf.logical_or(other, self)
+        return tf.math.logical_or(other, self)
 
     def __xor__(self, other):
-        return tf.logical_xor(self, other)
+        return tf.math.logical_xor(self, other)
 
     def __rxor__(self, other):
-        return tf.logical_xor(other, self)
+        return tf.math.logical_xor(other, self)
 
     # boolean operations
     def __lt__(self, other):
@@ -167,7 +167,7 @@ def log_sum_exp(x, axis=None, keepdims=False):
     """
     x = tf.convert_to_tensor(x)
     x_max = tf.reduce_max(x, axis=axis, keepdims=True)
-    ret = tf.log(tf.reduce_sum(tf.exp(x - x_max), axis=axis,
+    ret = tf.math.log(tf.reduce_sum(tf.exp(x - x_max), axis=axis,
                                keepdims=True)) + x_max
     if not keepdims:
         ret = tf.reduce_sum(ret, axis=axis)
@@ -189,7 +189,7 @@ def log_mean_exp(x, axis=None, keepdims=False):
     """
     x = tf.convert_to_tensor(x)
     x_max = tf.reduce_max(x, axis=axis, keepdims=True)
-    ret = tf.log(tf.reduce_mean(tf.exp(x - x_max), axis=axis,
+    ret = tf.math.log(tf.reduce_mean(tf.exp(x - x_max), axis=axis,
                                 keepdims=True)) + x_max
     if not keepdims:
         ret = tf.reduce_mean(ret, axis=axis)

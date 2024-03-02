@@ -85,16 +85,16 @@ def main():
     beta = 1200.
 
     # Build the computation graph
-    n = tf.placeholder(tf.int32, shape=[], name="n")
-    n_particles = tf.placeholder(tf.int32, shape=[], name="n_particles")
+    n = tf.compat.v1.placeholder(tf.int32, shape=[], name="n")
+    n_particles = tf.compat.v1.placeholder(tf.int32, shape=[], name="n_particles")
     model = build_gen(n, x_dim, n_class, z_dim, n_particles)
 
     # Labeled
-    x_labeled_ph = tf.placeholder(tf.float32, shape=[None, x_dim], name="x_l")
+    x_labeled_ph = tf.compat.v1.placeholder(tf.float32, shape=[None, x_dim], name="x_l")
     x_labeled = tf.cast(
         tf.less(tf.random_uniform(tf.shape(x_labeled_ph)), x_labeled_ph),
         tf.int32)
-    y_labeled_ph = tf.placeholder(tf.int32, shape=[None, n_class], name="y_l")
+    y_labeled_ph = tf.compat.v1.placeholder(tf.int32, shape=[None, n_class], name="y_l")
     proposal = labeled_proposal(x_labeled, y_labeled_ph, z_dim, n_particles)
 
     # adapting the proposal
@@ -112,7 +112,7 @@ def main():
             variational=proposal, axis=0))
 
     # Unlabeled
-    x_unlabeled_ph = tf.placeholder(tf.float32, shape=[None, x_dim],
+    x_unlabeled_ph = tf.compat.v1.placeholder(tf.float32, shape=[None, x_dim],
                                     name="x_u")
     x_unlabeled = tf.cast(
         tf.less(tf.random_uniform(tf.shape(x_unlabeled_ph)), x_unlabeled_ph),

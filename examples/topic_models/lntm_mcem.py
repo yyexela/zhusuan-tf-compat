@@ -43,7 +43,7 @@ def lntm(n_chains, n_docs, n_topics, n_vocab, eta_mean, eta_logstd):
     # doc_word: Document-word matrix
     doc_word = tf.matmul(tf.reshape(theta, [-1, n_topics]), phi)
     doc_word = tf.reshape(doc_word, [n_chains, n_docs, n_vocab])
-    bn.unnormalized_multinomial('x', tf.log(doc_word), normalize_logits=False,
+    bn.unnormalized_multinomial('x', tf.math.log(doc_word), normalize_logits=False,
                                 dtype=tf.float32)
     return bn
 
@@ -83,12 +83,12 @@ if __name__ == "__main__":
     Eta_logstd = np.zeros(n_topics, dtype=np.float32)
 
     # Build the computation graph
-    x = tf.placeholder(tf.float32, shape=[batch_size, n_vocab], name='x')
-    eta_mean = tf.placeholder(tf.float32, shape=[n_topics], name='eta_mean')
-    eta_logstd = tf.placeholder(tf.float32, shape=[n_topics],
+    x = tf.compat.v1.placeholder(tf.float32, shape=[batch_size, n_vocab], name='x')
+    eta_mean = tf.compat.v1.placeholder(tf.float32, shape=[n_topics], name='eta_mean')
+    eta_logstd = tf.compat.v1.placeholder(tf.float32, shape=[n_topics],
                                 name='eta_logstd')
     eta = tf.Variable(tf.zeros([n_chains, batch_size, n_topics]), name='eta')
-    eta_ph = tf.placeholder(tf.float32, shape=[n_chains, batch_size, n_topics],
+    eta_ph = tf.compat.v1.placeholder(tf.float32, shape=[n_chains, batch_size, n_topics],
                             name='eta_ph')
     beta = tf.Variable(tf.zeros([n_topics, n_vocab]), name='beta')
     phi = tf.nn.softmax(beta)
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     log_p_beta = tf.reduce_sum(log_p_beta)
     log_px = tf.reduce_sum(tf.reduce_mean(log_px, axis=0))
     log_joint_beta = log_p_beta + log_px
-    learning_rate_ph = tf.placeholder(tf.float32, shape=[], name='lr')
+    learning_rate_ph = tf.compat.v1.placeholder(tf.float32, shape=[], name='lr')
     optimizer = tf.train.AdamOptimizer(learning_rate_ph)
     infer = optimizer.minimize(-log_joint_beta, var_list=[beta])
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     _n_chains = 25
     _n_temperatures = 1000
 
-    _x = tf.placeholder(tf.float32, shape=[n_docs_test, n_vocab], name='x')
+    _x = tf.compat.v1.placeholder(tf.float32, shape=[n_docs_test, n_vocab], name='x')
     _eta = tf.Variable(tf.zeros([_n_chains, n_docs_test, n_topics]),
                        name='eta')
 

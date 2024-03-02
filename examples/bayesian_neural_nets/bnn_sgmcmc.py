@@ -57,8 +57,8 @@ def main():
 
     # Build the computation graph
     n_particles = 20
-    x = tf.placeholder(tf.float32, shape=[None, x_dim])
-    y = tf.placeholder(tf.float32, shape=[None])
+    x = tf.compat.v1.placeholder(tf.float32, shape=[None, x_dim])
+    y = tf.compat.v1.placeholder(tf.float32, shape=[None])
     layer_sizes = [x_dim] + n_hiddens + [1]
     w_names = ["w" + str(i) for i in range(len(layer_sizes) - 1)]
     wv = []
@@ -92,9 +92,9 @@ def main():
     mean_k = sgmcmc_info.mean_k
 
     # M step: Update the logstd hyperparameters
-    esti_logstds = [0.5*tf.log(tf.reduce_mean(w*w, axis=0)) for w in wv]
+    esti_logstds = [0.5*tf.math.log(tf.reduce_mean(w*w, axis=0)) for w in wv]
     output_logstds = dict(zip(w_names,
-                              [0.5*tf.log(tf.reduce_mean(w*w)) for w in wv]))
+                              [0.5*tf.math.log(tf.reduce_mean(w*w)) for w in wv]))
     assign_ops = [logstds[i].assign(logstd)
                   for (i, logstd) in enumerate(esti_logstds)]
     assign_op = tf.group(assign_ops)

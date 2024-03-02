@@ -53,11 +53,11 @@ def main():
     z_dim = 40
 
     # Build the computation graph
-    n_particles = tf.placeholder(tf.int32, shape=[], name="n_particles")
-    x_input = tf.placeholder(tf.float32, shape=[None, x_dim], name="x")
+    n_particles = tf.compat.v1.placeholder(tf.int32, shape=[], name="n_particles")
+    x_input = tf.compat.v1.placeholder(tf.float32, shape=[None, x_dim], name="x")
     x = tf.cast(tf.less(tf.random_uniform(tf.shape(x_input)), x_input),
                 tf.int32)
-    n = tf.placeholder(tf.int32, shape=[], name="n")
+    n = tf.compat.v1.placeholder(tf.int32, shape=[], name="n")
 
     model = build_gen(x_dim, z_dim, n, n_particles)
     variational = build_q_net(x, z_dim, n_particles)

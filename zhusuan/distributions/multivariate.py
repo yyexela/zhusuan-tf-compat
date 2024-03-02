@@ -170,13 +170,13 @@ class MultivariateNormalCholesky(Distribution):
         mean, cov_tril = (self.path_param(self.mean),
                           self.path_param(self.cov_tril))
         log_det = 2 * tf.reduce_sum(
-            tf.log(tf.matrix_diag_part(cov_tril)), axis=-1)
+            tf.math.log(tf.matrix_diag_part(cov_tril)), axis=-1)
         n_dim = tf.cast(self._n_dim, self.dtype)
-        log_z = - n_dim / 2 * tf.log(
+        log_z = - n_dim / 2 * tf.math.log(
             2 * tf.constant(np.pi, dtype=self.dtype)) - log_det / 2
         # log_z.shape == batch_shape
         if self._check_numerics:
-            log_z = tf.check_numerics(log_z, "log[det(Cov)]")
+            log_z = tf.debugging.check_numerics(log_z, "log[det(Cov)]")
         # (given-mean)' Sigma^{-1} (given-mean) =
         # (g-m)' L^{-T} L^{-1} (g-m) = |x|^2, where Lx = g-m =: y.
         y = tf.expand_dims(given - mean, -1)
@@ -669,10 +669,10 @@ class Dirichlet(Distribution):
         # fix of no static shape inference for tf.lbeta
         if alpha.get_shape():
             lbeta_alpha.set_shape(alpha.get_shape()[:-1])
-        log_given = tf.log(given)
+        log_given = tf.math.log(given)
         if self._check_numerics:
-            lbeta_alpha = tf.check_numerics(lbeta_alpha, "lbeta(alpha)")
-            log_given = tf.check_numerics(log_given, "log(given)")
+            lbeta_alpha = tf.debugging.check_numerics(lbeta_alpha, "lbeta(alpha)")
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
         log_p = -lbeta_alpha + tf.reduce_sum((alpha - 1) * log_given, -1)
         return log_p
 
@@ -786,7 +786,7 @@ class ExpConcrete(Distribution):
         shape = tf.concat([[n_samples], tf.shape(self.logits)], 0)
 
         uniform = open_interval_standard_uniform(shape, self.dtype)
-        gumbel = -tf.log(-tf.log(uniform))
+        gumbel = -tf.math.log(-tf.math.log(uniform))
         samples = tf.nn.log_softmax((logits + gumbel) / temperature)
 
         static_n_samples = n_samples if isinstance(n_samples, int) else None
@@ -798,10 +798,10 @@ class ExpConcrete(Distribution):
         logits, temperature = self.path_param(self.logits),\
                               self.path_param(self.temperature)
         n = tf.cast(self.n_categories, self.dtype)
-        log_temperature = tf.log(temperature)
+        log_temperature = tf.math.log(temperature)
 
         if self._check_numerics:
-            log_temperature = tf.check_numerics(
+            log_temperature = tf.debugging.check_numerics(
                 log_temperature, "log(temperature)")
 
         temp = logits - temperature * given
@@ -925,7 +925,7 @@ class Concrete(Distribution):
 
         uniform = open_interval_standard_uniform(shape, self.dtype)
         # TODO: Add Gumbel distribution
-        gumbel = -tf.log(-tf.log(uniform))
+        gumbel = -tf.math.log(-tf.math.log(uniform))
         samples = tf.nn.softmax((logits + gumbel) / temperature)
 
         static_n_samples = n_samples if isinstance(n_samples, int) else None
@@ -936,13 +936,13 @@ class Concrete(Distribution):
     def _log_prob(self, given):
         logits, temperature = self.path_param(self.logits), \
                               self.path_param(self.temperature)
-        log_given = tf.log(given)
-        log_temperature = tf.log(temperature)
+        log_given = tf.math.log(given)
+        log_temperature = tf.math.log(temperature)
         n = tf.cast(self.n_categories, self.dtype)
 
         if self._check_numerics:
-            log_given = tf.check_numerics(log_given, "log(given)")
-            log_temperature = tf.check_numerics(
+            log_given = tf.debugging.check_numerics(log_given, "log(given)")
+            log_temperature = tf.debugging.check_numerics(
                 log_temperature, "log(temperature)")
 
         temp = logits - temperature * log_given
@@ -1127,17 +1127,17 @@ class MatrixVariateNormalCholesky(Distribution):
                                 self.path_param(self.v_tril))
 
         log_det_u = 2 * tf.reduce_sum(
-            tf.log(tf.matrix_diag_part(u_tril)), axis=-1)
+            tf.math.log(tf.matrix_diag_part(u_tril)), axis=-1)
         log_det_v = 2 * tf.reduce_sum(
-            tf.log(tf.matrix_diag_part(v_tril)), axis=-1)
+            tf.math.log(tf.matrix_diag_part(v_tril)), axis=-1)
         n_row = tf.cast(self._n_row, self.dtype)
         n_col = tf.cast(self._n_col, self.dtype)
         logZ = - (n_row * n_col) / 2. * \
-            tf.log(2. * tf.constant(np.pi, dtype=self.dtype)) - \
+            tf.math.log(2. * tf.constant(np.pi, dtype=self.dtype)) - \
             n_row / 2. * log_det_v - n_col / 2. * log_det_u
         # logZ.shape == batch_shape
         if self._check_numerics:
-            logZ = tf.check_numerics(logZ, "log[det(Cov)]")
+            logZ = tf.debugging.check_numerics(logZ, "log[det(Cov)]")
 
         y = given - mean
         y_with_last_dim_changed = tf.expand_dims(tf.ones(tf.shape(y)[:-1]), -1)
