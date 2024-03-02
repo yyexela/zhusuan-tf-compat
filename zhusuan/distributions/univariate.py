@@ -97,7 +97,7 @@ class Normal(Distribution):
             self._std = tf.convert_to_tensor(std)
             dtype = assert_same_float_dtype([(self._mean, 'Normal.mean'),
                                              (self._std, 'Normal.std')])
-            logstd = tf.log(self._std)
+            logstd = tf.math.log(self._std)
             if check_numerics:
                 logstd = tf.check_numerics(logstd, "log(std)")
             self._logstd = logstd
@@ -164,7 +164,7 @@ class Normal(Distribution):
             mean = tf.stop_gradient(mean)
             std = tf.stop_gradient(std)
         shape = tf.concat([[n_samples], self.batch_shape], 0)
-        samples = tf.random_normal(shape, dtype=self.dtype) * std + mean
+        samples = tf.random.normal(shape, dtype=self.dtype) * std + mean
         static_n_samples = n_samples if isinstance(n_samples, int) else None
         samples.set_shape(
             tf.TensorShape([static_n_samples]).concatenate(
